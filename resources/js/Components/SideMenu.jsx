@@ -1,37 +1,48 @@
-
 "use client";
 
-import { Sidebar, SidebarItem, SidebarItemGroup, SidebarItems } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiViewBoards } from "react-icons/hi";
+import { Sidebar } from "flowbite-react";
+import { HiChatBubbleLeftRight, HiPlusCircle } from "react-icons/hi2";
+import ApplicationLogo from "@/Components/ApplicationLogo";
 
 export function SideMenu() {
-  return (
-    <Sidebar aria-label="Default sidebar example">
-      <SidebarItems>
-        <SidebarItemGroup>
-          <SidebarItem href="#" icon={HiChartPie}>
-            Dashboard
-          </SidebarItem>
-          <SidebarItem href="#" icon={HiViewBoards} label="Pro" labelColor="dark">
-            Kanban
-          </SidebarItem>
-          <SidebarItem href="#" icon={HiInbox} label="3">
-            Inbox
-          </SidebarItem>
-          <SidebarItem href="#" icon={HiUser}>
-            Users
-          </SidebarItem>
-          <SidebarItem href="#" icon={HiShoppingBag}>
-            Products
-          </SidebarItem>
-          <SidebarItem href="#" icon={HiArrowSmRight}>
-            Sign In
-          </SidebarItem>
-          <SidebarItem href="#" icon={HiTable}>
-            Sign Up
-          </SidebarItem>
-        </SidebarItemGroup>
-      </SidebarItems>
-    </Sidebar>
-  );
+    return (
+        <div className="h-screen w-64 bg-[#4A6D4D]">
+            <div className="p-4 flex items-center text-white">
+                <ApplicationLogo className="h-8 w-8 mr-3" />
+                <span className="font-bold text-xl">MyEnglishApp</span>
+            </div>
+            <Sidebar aria-label="Side menu" className="w-full bg-inherit" theme={{
+                root: {
+                    base: "h-full",
+                    inner: "h-full overflow-y-auto overflow-x-hidden rounded bg-inherit px-3 py-4",
+                },
+                item: {
+                    base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-white hover:bg-[#5a8a5d]",
+                    icon: {
+                        base: "h-6 w-6 flex-shrink-0 text-white transition duration-75 group-hover:text-white",
+                    }
+                }
+            }}>
+                <Sidebar.Items>
+                    <Sidebar.ItemGroup>
+                        <Sidebar.Item href="#" icon={HiPlusCircle}>
+                            新規スレッド作成
+                        </Sidebar.Item>
+                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
+                            英会話スレッド 1
+                        </Sidebar.Item>
+                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
+                            英会話スレッド 2
+                        </Sidebar.Item>
+                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
+                            英会話スレッド 3
+                        </Sidebar.Item>
+                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
+                            英会話スレッド 4
+                        </Sidebar.Item>
+                    </Sidebar.ItemGroup>
+                </Sidebar.Items>
+            </Sidebar>
+        </div>
+    );
 }
