@@ -2,13 +2,12 @@
 
 import { Sidebar } from "flowbite-react";
 import { HiChatBubbleLeftRight, HiPlusCircle } from "react-icons/hi2";
-import ApplicationLogo from "@/Components/ApplicationLogo";
 
 export function SideMenu() {
     return (
         <div className="h-screen w-64 bg-[#4A6D4D]">
             <div className="p-4 flex items-center text-white">
-                <ApplicationLogo className="h-8 w-8 mr-3" />
+                <img src="/favicon.png" alt="Logo" className="h-8 w-8 mr-3" />
                 <span className="font-bold text-xl">MyEnglishApp</span>
             </div>
             <Sidebar aria-label="Side menu" className="w-full bg-inherit" theme={{
