@@ -6,7 +6,7 @@ export default function Show({}) {
     return (
         <>
             <Head title="Show" />
-            <div className="flex min-h-screen overflow-hidden">
+            <div className="flex min-h-screen overflow-hidden ml-64">
                 <SideMenu />
                 <main className="flex-grow bg-[#424242] p-8 text-white relative overflow-y-auto h-screen">
                     <div className="flex justify-end mb-8">
@@ -14,11 +14,11 @@ export default function Show({}) {
                     </div>
                     <h1 className="text-2xl font-bold mb-6">英会話画面</h1>
                     {/* チャットエリア */}
-                    <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+                    <div className="flex flex-col gap-4 max-w-3xl mx-auto px-4">
                         {/* ユーザーの発言 */}
                         <div className="flex justify-end">
                             <div className="flex items-center gap-2">
-                                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold">Hello!</div>
+                                <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
                                 <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
                             </div>
                         </div>
@@ -26,7 +26,7 @@ export default function Show({}) {
                         <div className="flex justify-start items-center">
                             <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
                             <div className="flex items-center">
-                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center">
+                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
                                     Hi !! How are you ?
                                 </div>
                                 <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
@@ -39,7 +39,7 @@ export default function Show({}) {
                         {/* ユーザーの発言 */}
                         <div className="flex justify-end">
                             <div className="flex items-center gap-2">
-                                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold">Hello!</div>
+                                <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
                                 <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
                             </div>
                         </div>
@@ -47,7 +47,7 @@ export default function Show({}) {
                         <div className="flex justify-start items-center">
                             <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
                             <div className="flex items-center">
-                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center">
+                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
                                     Hi !! How are you ?
                                 </div>
                                 <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
@@ -60,7 +60,7 @@ export default function Show({}) {
                         {/* ユーザーの発言 */}
                         <div className="flex justify-end">
                             <div className="flex items-center gap-2">
-                                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold">Hello!</div>
+                                <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
                                 <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
                             </div>
                         </div>
@@ -68,7 +68,7 @@ export default function Show({}) {
                         <div className="flex justify-start items-center">
                             <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
                             <div className="flex items-center">
-                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center">
+                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
                                     Hi !! How are you ?
                                 </div>
                                 <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
@@ -81,7 +81,7 @@ export default function Show({}) {
                         {/* ユーザーの発言 */}
                         <div className="flex justify-end">
                             <div className="flex items-center gap-2">
-                                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold">Hello!</div>
+                                <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
                                 <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
                             </div>
                         </div>
@@ -89,7 +89,7 @@ export default function Show({}) {
                         <div className="flex justify-start items-center">
                             <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
                             <div className="flex items-center">
-                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center">
+                                <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
                                     Hi !! How are you ?
                                 </div>
                                 <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
@@ -107,7 +107,7 @@ export default function Show({}) {
                         {/* ユーザーの発言 */}
                         <div className="flex justify-end">
                             <div className="flex items-center gap-2">
-                                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold">I'm good.</div>
+                                <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">I'm good.</div>
                                 <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
                             </div>
                         </div>
