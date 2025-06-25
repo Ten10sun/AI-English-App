@@ -3,7 +3,7 @@ import { SideMenu } from '@/Components/SideMenu'
 import LogoutButton from "@/Components/LogoutButton"
 import { useState } from 'react';
 
-export default function Top({}) {
+export default function Top({ threads = [] }) {
     const [sidebarWidth, setSidebarWidth] = useState(256);
 
     const handleMouseDown = (e) => {
@@ -32,7 +32,7 @@ export default function Top({}) {
     return (
         <>
             <Head title="Top" />
-            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} />
+            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} threads={threads} />
             <main style={{ marginLeft: `${sidebarWidth}px` }} className="flex-grow bg-[#424242] p-8 text-white min-h-screen">
                 <div className="flex justify-end mb-8">
                     <LogoutButton />

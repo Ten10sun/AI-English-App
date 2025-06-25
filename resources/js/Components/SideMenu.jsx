@@ -3,7 +3,7 @@
 import { Sidebar } from "flowbite-react";
 import { HiChatBubbleLeftRight, HiPlusCircle } from "react-icons/hi2";
 
-export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {} }) {
+export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threads = [] }) {
     return (
         <div style={{ width: `${sidebarWidth}px` }} className="fixed top-0 left-0 h-screen bg-[#4A6D4D] z-10 flex flex-col">
             <div
@@ -31,57 +31,15 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {} }) {
                         <Sidebar.Item href="#" icon={HiPlusCircle}>
                             新規スレッド作成
                         </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 1
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 2
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 3
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
-                        <Sidebar.Item href="#" icon={HiChatBubbleLeftRight}>
-                            英会話スレッド 4
-                        </Sidebar.Item>
+                        {threads.map(thread => (
+                            <Sidebar.Item
+                                key={thread.id}
+                                href={`#thread-${thread.id}`}
+                                icon={HiChatBubbleLeftRight}
+                            >
+                                {thread.title}
+                            </Sidebar.Item>
+                        ))}
                     </Sidebar.ItemGroup>
                 </Sidebar.Items>
             </Sidebar>
