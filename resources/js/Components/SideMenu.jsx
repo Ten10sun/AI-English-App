@@ -3,7 +3,7 @@
 import { Sidebar } from "flowbite-react";
 import { HiChatBubbleLeftRight, HiPlusCircle } from "react-icons/hi2";
 
-export function SideMenu({ sidebarWidth, handleMouseDown }) {
+export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {} }) {
     return (
         <div style={{ width: `${sidebarWidth}px` }} className="fixed top-0 left-0 h-screen bg-[#4A6D4D] z-10 flex flex-col">
             <div
