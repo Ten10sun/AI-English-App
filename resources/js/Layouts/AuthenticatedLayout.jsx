@@ -71,7 +71,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            Log Out1
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -155,7 +155,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 href={route('logout')}
                                 as="button"
                             >
-                                Log Out
+                                Log Out 2
                             </ResponsiveNavLink>
                         </div>
                     </div>
