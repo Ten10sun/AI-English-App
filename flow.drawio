@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="MRXdMGG9zCdeaotOe1oI" name="ページ1">
-        <mxGraphModel dx="573" dy="444" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
+        <mxGraphModel dx="729" dy="435" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -9,9 +9,6 @@
                 </mxCell>
                 <mxCell id="3" value="AI英会話アプリ" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#82b366;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#d5e8d4;shape=mxgraph.mscae.enterprise.database_server" parent="1" vertex="1">
                     <mxGeometry x="311" y="92.5" width="38" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="4" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Open AI&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.mps-ai;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="30" width="52.2" height="52.5" as="geometry"/>
                 </mxCell>
                 <mxCell id="5" value="Open AI" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/ai_machine_learning/Language_Services.svg;" parent="1" vertex="1">
                     <mxGeometry x="460" y="74.5" width="68" height="68" as="geometry"/>
@@ -55,7 +52,7 @@
                 <mxCell id="25" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="16" target="23" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="16" value="メニュー画面を表示" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="16" value="トップ画面を表示" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="270" y="490" width="120" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="21" value="" style="endArrow=none;dashed=1;html=1;" parent="1" edge="1">
@@ -73,7 +70,7 @@
                 <mxCell id="27" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="23" target="26" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="英会話開始ボタンを押す&lt;br&gt;または英会話履歴を選択する" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="23" value="新規スレッド作成ボタンを押す&lt;br&gt;または英会話履歴を選択する" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="50" y="530" width="172.5" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="29" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="26" target="28" edge="1">
@@ -204,13 +201,13 @@
                 <mxCell id="72" value="英語のテキストを日本語訳してレスポンスを返す" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="460" y="1790" width="150" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="79" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="75" target="78">
+                <mxCell id="79" value="" style="edgeStyle=none;html=1;" parent="1" source="75" target="78" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="75" value="日本語訳のメッセージをDBに登録" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="271.56" y="1840" width="138.44" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="78" value="英会話画面に日本語訳&lt;div&gt;のメッセージを表示&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="78" value="英会話画面に日本語訳&lt;div&gt;のメッセージを表示&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="271.56" y="1910" width="138.44" height="40" as="geometry"/>
                 </mxCell>
             </root>

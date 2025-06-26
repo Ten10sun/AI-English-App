@@ -29,13 +29,13 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                 }}>
                     <Sidebar.Items className="h-full flex-1 overflow-y-auto">
                         <Sidebar.ItemGroup>
-                            <Sidebar.Item href="#" icon={HiPlusCircle}>
+                            <Sidebar.Item href={ route('thread.store')} icon={HiPlusCircle}>
                                 新規スレッド作成
                             </Sidebar.Item>
                             {threads.map(thread => (
                                 <Sidebar.Item
                                     key={thread.id}
-                                    href={`#thread-${thread.id}`}
+                                    href={route('thread.show', { threadId: thread.id })}
                                     icon={HiChatBubbleLeftRight}
                                 >
                                     {thread.title}

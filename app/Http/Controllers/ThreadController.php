@@ -33,9 +33,15 @@ class ThreadController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreThreadRequest $request)
+    public function store()
     {
-        //
+    // 現在日時を日本時間（Asia/Tokyo）でタイトルとして新しいスレッドを作成
+    $now = now()->setTimezone('Asia/Tokyo')->format('Y-m-d H:i:s');
+    $thread = Thread::create([
+        'title' => $now,
+    ]);
+    // 作成したスレッドのShowアクションへリダイレクト
+    return redirect()->route('thread.show', ['threadId' => $thread->id]);
     }
 
     /**
