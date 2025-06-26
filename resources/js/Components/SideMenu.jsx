@@ -29,7 +29,16 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                 }}>
                     <Sidebar.Items className="h-full flex-1 overflow-y-auto">
                         <Sidebar.ItemGroup>
-                            <Sidebar.Item href={ route('thread.store')} icon={HiPlusCircle}>
+                            <Sidebar.Item
+                                href={route('thread.store')}
+                                icon={() => (
+                                    <span
+                                        className="bg-[#4A6D4D] rounded-full p-1 flex items-center justify-center"
+                                    >
+                                        <HiPlusCircle className="h-6 w-6 text-white" />
+                                    </span>
+                                )}
+                            >
                                 新規スレッド作成
                             </Sidebar.Item>
                             {threads.map(thread => (

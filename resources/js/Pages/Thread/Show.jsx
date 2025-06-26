@@ -31,7 +31,7 @@ export default function Show({ threads = [], messages = [] }) {
         <>
             <Head title="Show" />
             <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} threads={threads} />
-            <main style={{ marginLeft: `${sidebarWidth}px` }} className="flex-grow bg-[#424242] p-8 text-white relative overflow-y-auto h-screen">
+            <main style={{ marginLeft: `${sidebarWidth}px`, background: '#23272F' }} className="flex-grow p-8 text-white relative overflow-y-auto h-screen">
                 <div className="flex justify-end mb-8">
                     <LogoutButton />
                 </div>
