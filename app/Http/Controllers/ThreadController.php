@@ -7,6 +7,7 @@ use Inertia\Response as InertiaResponse;
 use App\Http\Requests\StoreThreadRequest;
 use App\Http\Requests\UpdateThreadRequest;
 use App\Models\Thread;
+use App\Models\Message;
 
 class ThreadController extends Controller
 {
@@ -40,12 +41,14 @@ class ThreadController extends Controller
     /**
      * 英会話画面の表示
      */
-    public function show(Thread $thread)
+    public function show(int $threadId)
     {
-        $threads = Thread::orderBy('id', 'desc')->get(['id', 'title']);
+        $messages = Message::where('thread_id', $threadId)->get();//メッセージを取得
+        $threads = Thread::orderBy('id', 'desc')->get(['id', 'title']); //スレッドを取得
         return Inertia::render('Thread/Show', [
-            'thread' => $thread,
+            'threadId' => $threadId,
             'threads' => $threads,
+            'messages' => $messages,
         ]);
     }
 

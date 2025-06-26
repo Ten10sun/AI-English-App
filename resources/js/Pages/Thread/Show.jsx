@@ -3,7 +3,7 @@ import { SideMenu } from '@/Components/SideMenu'
 import LogoutButton from "@/Components/LogoutButton"
 import { useState } from 'react';
 
-export default function Show({ threads = [] }) {
+export default function Show({ threads = [], messages = [] }) {
     const [sidebarWidth, setSidebarWidth] = useState(256);
 
     const handleMouseDown = (e) => {
@@ -38,102 +38,49 @@ export default function Show({ threads = [] }) {
                 <h1 className="text-2xl font-bold mb-6">英会話画面</h1>
                 {/* チャットエリア */}
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto px-4">
-                    {/* ユーザーの発言 */}
-                    <div className="flex justify-end">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
-                            <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
-                        </div>
-                    </div>
-                    {/* AIの発言 */}
-                    <div className="flex justify-start items-center">
-                        <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
-                        <div className="flex items-center">
-                            <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
-                                Hi !! How are you ?
+                    {messages.map((msg, idx) =>
+                        msg.sender === "user" ? (
+                            <div key={idx} className="flex justify-end">
+                                <div className="flex items-center gap-2">
+                                    <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">
+                                        {msg.message_en}
+                                    </div>
+                                    <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
+                                </div>
                             </div>
-                            <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
-                                {/* スピーカーアイコン */}
-                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5zm7.07 2.93a10 10 0 010 10.14m2.83-7.07a14 14 0 010 14.14" /></svg>
-                            </button>
-                            <button className="ml-2 bg-gray-300 text-gray-800 px-3 py-1 rounded text-xs font-bold">Aあ</button>
-                        </div>
-                    </div>
-                    {/* ユーザーの発言 */}
-                    <div className="flex justify-end">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
-                            <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
-                        </div>
-                    </div>
-                    {/* AIの発言 */}
-                    <div className="flex justify-start items-center">
-                        <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
-                        <div className="flex items-center">
-                            <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
-                                Hi !! How are you ?
+                        ) : (
+                            <div key={idx} className="flex justify-start items-center">
+                                <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
+                                <div className="flex items-center">
+                                    <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
+                                        {msg.message_en}
+                                    </div>
+                                    {/* 音声再生ボタン */}
+                                    <button
+                                        className="ml-2 p-2 bg-gray-100 rounded-full hover:bg-gray-300"
+                                        title="音声再生"
+                                        onClick={() => {/* TODO: 音声再生処理 */}}
+                                    >
+                                        {/* スピーカーアイコン */}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l-2 2H5a2 2 0 00-2 2v4a2 2 0 002 2h2l2 2zm7-7a4 4 0 00-4-4m0 8a4 4 0 004-4m0 0a8 8 0 00-8-8" />
+                                        </svg>
+                                    </button>
+                                    {/* 言語切替ボタン */}
+                                    <button
+                                        className="ml-2 p-2 bg-gray-100 rounded-full hover:bg-gray-300"
+                                        title="言語切替"
+                                        onClick={() => {/* TODO: 言語切替処理 */}}
+                                    >
+                                        {/* Aあアイコン */}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <text x="2" y="17" fontSize="12" fontFamily="Arial">Aあ</text>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
-                            <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
-                                {/* スピーカーアイコン */}
-                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5zm7.07 2.93a10 10 0 010 10.14m2.83-7.07a14 14 0 010 14.14" /></svg>
-                            </button>
-                            <button className="ml-2 bg-gray-300 text-gray-800 px-3 py-1 rounded text-xs font-bold">Aあ</button>
-                        </div>
-                    </div>
-                    {/* ユーザーの発言 */}
-                    <div className="flex justify-end">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
-                            <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
-                        </div>
-                    </div>
-                    {/* AIの発言 */}
-                    <div className="flex justify-start items-center">
-                        <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
-                        <div className="flex items-center">
-                            <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
-                                Hi !! How are you ?
-                            </div>
-                            <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
-                                {/* スピーカーアイコン */}
-                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5zm7.07 2.93a10 10 0 010 10.14m2.83-7.07a14 14 0 010 14.14" /></svg>
-                            </button>
-                            <button className="ml-2 bg-gray-300 text-gray-800 px-3 py-1 rounded text-xs font-bold">Aあ</button>
-                        </div>
-                    </div>
-                    {/* ユーザーの発言 */}
-                    <div className="flex justify-end">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">Hello!</div>
-                            <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
-                        </div>
-                    </div>
-                    {/* AIの発言 */}
-                    <div className="flex justify-start items-center">
-                        <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
-                        <div className="flex items-center">
-                            <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
-                                Hi !! How are you ?
-                            </div>
-                            <button className="ml-2 bg-gray-300 rounded px-2 py-1 flex items-center">
-                                {/* スピーカーアイコン */}
-                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5zm7.07 2.93a10 10 0 010 10.14m2.83-7.07a14 14 0 010 14.14" /></svg>
-                            </button>
-                            <button className="ml-2 bg-gray-300 text-gray-800 px-3 py-1 rounded text-xs font-bold">Aあ</button>
-                        </div>
-                    </div>
-
-
-
-
-
-                    {/* ユーザーの発言 */}
-                    <div className="flex justify-end">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">I'm good.</div>
-                            <span className="bg-gray-600 px-2 py-1 rounded-full text-sm">You</span>
-                        </div>
-                    </div>
+                        )
+                    )}
                 </div>
                 {/* 右下マイクボタン */}
                 <button className="fixed bottom-8 right-8 bg-white text-gray-900 rounded-full w-20 h-20 flex items-center justify-center shadow-lg">

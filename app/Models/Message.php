@@ -28,4 +28,11 @@ class Message extends Model
     {
         return $this->belongsTo(Thread::class);
     }
+
+    public function getSenderAttribute($value)
+    {
+        if ($value == 1) return 'user';
+        if ($value == 2) return 'ai';
+        return $value;
+    }
 }
