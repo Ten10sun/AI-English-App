@@ -50,7 +50,7 @@ export default function Show({ threads = [], messages = [] }) {
                             </div>
                         ) : (
                             <div key={idx} className="flex justify-start items-center">
-                                <span className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
+                                <span className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-bold mr-2">AI</span>
                                 <div className="flex items-center">
                                     <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
                                         {msg.message_en}
