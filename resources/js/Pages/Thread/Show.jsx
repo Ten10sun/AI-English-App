@@ -7,6 +7,7 @@ import axios from "axios";
 export default function Show({ threads = [], messages = [], threadId }) {
     const [sidebarWidth, setSidebarWidth] = useState(256);
     const [isRecording, setIsRecording] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
 
@@ -67,6 +68,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
                     if (mimeType === "audio/ogg") ext = "ogg";
                     const formData = new FormData();
                     formData.append("audio", audioBlob, `recorded.${ext}`);
+                    setIsLoading(true);
                     try {
                         await axios.post(
                             `/thread/${threadId}/message`,
@@ -80,6 +82,8 @@ export default function Show({ threads = [], messages = [], threadId }) {
                         window.location.reload();
                     } catch (err) {
                         alert("音声の送信に失敗しました");
+                    } finally {
+                        setIsLoading(false);
                     }
                 };
                 mediaRecorderRef.current = mediaRecorder;
@@ -223,6 +227,15 @@ export default function Show({ threads = [], messages = [], threadId }) {
                     </svg>
                 </button>
             </main>
+            {/* ローディングオーバーレイ */}
+            {isLoading && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center"
+                >
+                    {/* シンプルな円形スピナー */}
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     );
 }
