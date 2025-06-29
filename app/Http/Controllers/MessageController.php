@@ -23,17 +23,20 @@ class MessageController extends Controller
             // 音声データを保存する処理
             $message = Message::create([
                 'thread_id' => $threadId,
-                'message_en' => 'dummy message', // 仮のメッセージ
-                'message_ja' => 'ダミーメッセージ', //  仮のメッセージ
+                'message_en' => 'dummy message1', // 仮のメッセージ
+                'message_ja' => 'ダミーメッセージ1', // 仮のメッセージ
                 'sender' => 1, // 送信者: 1はユーザー
                 'audio_file_path' => $path
             ]);
 
-            //音声データをAPIに送信する処理
+            // 音声データをAPIに送信する処理
             $apiService = new ApiService();
-            $apiService->callWhisperApi($path);
-
-
+            $response = $apiService->callWhisperApi($path);
+            $message_en = $response['text'];
+            $message->update([
+                'message_en' => $message_en,
+                'message_ja' => 'ダミーメッセージ2', // ここは翻訳APIを使って翻訳することも可能
+            ]);
 
             return response()->json([
                 'status' => 'success',

@@ -36,7 +36,7 @@ class ApiService
             throw new \Exception('Whisper APIリクエスト失敗: ' . $response->body());
         }
 
-        dd('$response->json()',$response->json()); // デバッグ用のダンプ
+        // dd('$response->json()',$response->json()); // デバッグ用のダンプ
 
         return $response->json();
     }
