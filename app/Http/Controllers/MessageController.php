@@ -38,6 +38,19 @@ class MessageController extends Controller
                 'message_ja' => 'ダミーメッセージ2', // ここは翻訳APIを使って翻訳することも可能
             ]);
 
+            $messages = Message::where('thread_id', $threadId)->get();
+            // GPTにAPIリクエスト
+            $gptResponse = $apiService->callGptApi($messages);
+            $aiMessageText = $gptResponse['choices'][0]['message']['content'] ?? 'No response from GPT';
+                        // 音声データを保存する処理
+            $aiMessage = Message::create([
+                'thread_id' => $threadId,
+                'message_en' => $aiMessageText,
+                'message_ja' => 'Aiのダミーメッセージ', // 仮のメッセージ
+                'sender' => 2, // 送信者: 2はAI
+                'audio_file_path' => null
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Message saved successfully',

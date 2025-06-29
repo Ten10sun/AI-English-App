@@ -40,4 +40,39 @@ class ApiService
 
         return $response->json();
     }
+
+    // @param Collection<Message> $modelMessages
+    public function callGptApi($modelMessages)
+    {
+        // OpenAI API用のメッセージ配列に変換
+        $openAiMessages = [];
+        // システムプロンプト（必要に応じて調整）
+        $openAiMessages[] = [
+            'role' => 'system',
+            'content' => 'You are a helpful English conversation partner. Please reply in simple, natural English.'
+        ];
+        foreach ($modelMessages as $message) {
+            // sender: 1→user, 2→assistant
+            $role = $message->sender === 'user' ? 'user' : 'assistant';
+            // 空メッセージはスキップ
+            if (empty($message->message_en)) continue;
+            $openAiMessages[] = [
+                'role' => $role,
+                'content' => $message->message_en
+            ];
+        }
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+            'Content-Type' => 'application/json',
+        ])->post($this->baseUrl . '/v1/chat/completions', [
+            'model' => 'gpt-4o-mini',
+            'messages' => $openAiMessages,
+        ]);
+        if ($response->failed()) {
+            throw new \Exception('GPT APIリクエスト失敗: ' . $response->body());
+        }
+
+        // dd('$response->json()', $response->json()); // デバッグ用のダンプ
+        return $response->json();
+    }
 }
