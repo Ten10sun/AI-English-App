@@ -1,7 +1,7 @@
 import { Head } from "@inertiajs/react";
 import { SideMenu } from "@/Components/SideMenu";
 import LogoutButton from "@/Components/LogoutButton";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
 export default function Show({ threads = [], messages = [], threadId }) {
@@ -10,6 +10,10 @@ export default function Show({ threads = [], messages = [], threadId }) {
     const [isLoading, setIsLoading] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
+    const audioRefs = useRef({});
+    const latestAiAudioRef = useRef(null);
+    const [playedIdx, setPlayedIdx] = useState(null);
+    const [autoPlayFailedIdx, setAutoPlayFailedIdx] = useState(null);
 
     const handleMouseDown = (e) => {
         e.preventDefault();
@@ -32,8 +36,18 @@ export default function Show({ threads = [], messages = [], threadId }) {
         document.addEventListener("mouseup", stopDrag);
     };
 
+    const playSilentAudio = () => {
+        // AudioContextを使って無音を再生
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = ctx.createBufferSource();
+        source.buffer = ctx.createBuffer(1, 1, 22050); // 1ch, 1サンプル, 22050Hz
+        source.connect(ctx.destination);
+        source.start(0);
+    };
+
     // 録音開始/停止トグル
     const handleMicClick = async () => {
+        playSilentAudio(); // ここで無音再生
         if (!isRecording) {
             // 録音開始
             try {
@@ -101,6 +115,74 @@ export default function Show({ threads = [], messages = [], threadId }) {
         }
     };
 
+    const getAudioUrl = (audioPath) => {
+        if (!audioPath) return null;
+        if (audioPath.startsWith('/storage/')) return audioPath;
+        return `/storage/${audioPath}`;
+    };
+
+    const playAudio = (audioPath, refObj, idx = null) => {
+        const url = getAudioUrl(audioPath);
+        if (!url) return;
+        if (idx !== null && refObj.current[idx]) {
+            refObj.current[idx].pause();
+            refObj.current[idx].currentTime = 0;
+        } else if (idx === null && refObj.current) {
+            refObj.current.pause();
+            refObj.current.currentTime = 0;
+        }
+        const audio = new Audio(url);
+        audio.onerror = (e) => {
+            alert('音声ファイルの再生に失敗しました: ' + url);
+            console.error('Audio error:', e);
+        };
+        if (idx !== null) {
+            refObj.current[idx] = audio;
+        } else {
+            refObj.current = audio;
+        }
+        audio.play().catch((e) => {
+            alert('自動再生エラー: ' + e.message);
+            console.warn('自動再生がブロックされました:', e);
+        });
+    };
+
+    // AIの最新メッセージのTTS音声を自動再生
+    useEffect(() => {
+        const aiMessages = messages.filter(msg => msg.sender === "ai" && msg.audio_file_path);
+        if (aiMessages.length === 0) return;
+        const latestIdx = messages.lastIndexOf(aiMessages[aiMessages.length - 1]);
+        const latestAiMsg = aiMessages[aiMessages.length - 1];
+
+        if (latestAiAudioRef.current) {
+            latestAiAudioRef.current.pause();
+            latestAiAudioRef.current.currentTime = 0;
+        }
+        const audio = new Audio(`/storage/${latestAiMsg.audio_file_path}`);
+        latestAiAudioRef.current = audio;
+        audio.play()
+            .then(() => {
+                setPlayedIdx(latestIdx);
+                setAutoPlayFailedIdx(null);
+            })
+            .catch(() => {
+                setAutoPlayFailedIdx(latestIdx);
+            });
+    }, [messages]);
+
+    const handlePlayAudio = (audioPath, idx) => {
+        if (!audioPath) return;
+        if (audioRefs.current[idx]) {
+            audioRefs.current[idx].pause();
+            audioRefs.current[idx].currentTime = 0;
+        }
+        const audio = new Audio(`/storage/${audioPath}`);
+        audioRefs.current[idx] = audio;
+        audio.play();
+        setPlayedIdx(idx);
+        setAutoPlayFailedIdx(null);
+    };
+
     return (
         <>
             <Head title="Show" />
@@ -122,8 +204,11 @@ export default function Show({ threads = [], messages = [], threadId }) {
                 <h1 className="text-2xl font-bold mb-6">英会話画面</h1>
                 {/* チャットエリア */}
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto px-4">
-                    {messages.map((msg, idx) =>
-                        msg.sender === "user" ? (
+                    {messages.map((msg, idx) => {
+                        if (msg.sender === "ai") {
+                            console.log('AI audio_file_path:', msg.audio_file_path);
+                        }
+                        return msg.sender === "user" ? (
                             <div key={idx} className="flex justify-end">
                                 <div className="flex items-center gap-2">
                                     <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold max-w-[60vw] break-words">
@@ -148,26 +233,19 @@ export default function Show({ threads = [], messages = [], threadId }) {
                                     </div>
                                     {/* 音声再生ボタン */}
                                     <button
-                                        className="ml-2 p-2 bg-gray-100 rounded-full hover:bg-gray-300"
+                                        className={`ml-2 p-2 rounded-full
+                                            ${autoPlayFailedIdx === idx ? 'bg-yellow-400 animate-pulse' : 'bg-blue-400'}
+                                            hover:bg-blue-500`}
                                         title="音声再生"
-                                        onClick={() => {
-                                            /* TODO: 音声再生処理 */
-                                        }}
+                                        onClick={() => handlePlayAudio(msg.audio_file_path, idx)}
                                     >
-                                        {/* スピーカーアイコン */}
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-gray-700"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
+                                            className="h-5 w-5"
+                                            viewBox="0 0 20 20"
+                                            fill={autoPlayFailedIdx === idx ? "black" : "white"}
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 19V6l-2 2H5a2 2 0 00-2 2v4a2 2 0 002 2h2l2 2zm7-7a4 4 0 00-4-4m0 8a4 4 0 004-4m0 0a8 8 0 00-8-8"
-                                            />
+                                            <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V3l-5 4z"/>
                                         </svg>
                                     </button>
                                     {/* 言語切替ボタン */}
@@ -199,8 +277,14 @@ export default function Show({ threads = [], messages = [], threadId }) {
                                 </div>
                             </div>
                         )
-                    )}
+                    })}
                 </div>
+                {/* ガイダンス */}
+                {autoPlayFailedIdx !== null && (
+                    <div className="text-sm text-yellow-400 mb-2">
+                        ブラウザの仕様により自動再生がブロックされました。スピーカーボタンを押して音声を再生してください。
+                    </div>
+                )}
                 {/* 右下マイクボタン */}
                 <button
                     className={`fixed bottom-8 right-8 rounded-full w-20 h-20 flex items-center justify-center shadow-lg transition-colors duration-200 ${

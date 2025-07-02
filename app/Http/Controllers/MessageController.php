@@ -38,6 +38,7 @@ class MessageController extends Controller
                 'message_ja' => 'ダミーメッセージ2', // ここは翻訳APIを使って翻訳することも可能
             ]);
 
+
             $messages = Message::where('thread_id', $threadId)->get();
             // GPTにAPIリクエスト
             $gptResponse = $apiService->callGptApi($messages);
@@ -49,6 +50,14 @@ class MessageController extends Controller
                 'message_ja' => 'Aiのダミーメッセージ', // 仮のメッセージ
                 'sender' => 2, // 送信者: 2はAI
                 'audio_file_path' => null
+            ]);
+
+            // TTSにAPIリクエスト
+            $aiAudioFilePath = $apiService->callTtsApi($aiMessageText);
+            // dd('TTS Response:', $aiAudioFilePath);
+            //　データベースに音声ファイルパスを保存
+            $aiMessage->update([
+                'audio_file_path' => $aiAudioFilePath
             ]);
 
             return response()->json([

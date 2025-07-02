@@ -75,4 +75,49 @@ class ApiService
         // dd('$response->json()', $response->json()); // デバッグ用のダンプ
         return $response->json();
     }
+
+    // @param string $aiMessageText
+    // TTS（Text-to-Speech）APIを呼び出す
+    public function callTtsApi($aiMessageText)
+    {
+        $timestamp = now()->format('YmdHis');
+        $fileName = "tts_{$timestamp}.mp3";
+        $savePath = storage_path('app/public/ai_audio/' . $fileName);
+
+        $apiKey = env('OPENAI_API_KEY');
+        $url = $this->baseUrl . '/v1/audio/speech';
+        $postData = [
+            'model' => 'tts-1', // または 'gpt-4o-mini-tts' など利用可能なモデル名
+            'input' => $aiMessageText,
+            'voice' => 'alloy', // 必要に応じて他のvoiceも可
+            'response_format' => 'mp3',
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+        $audioData = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($audioData === false || $httpCode !== 200) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new \Exception('TTS APIリクエスト失敗: ' . $error . ' (HTTP ' . $httpCode . ')');
+        }
+        curl_close($ch);
+
+        // 保存ディレクトリがなければ作成
+        $dir = dirname($savePath);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        file_put_contents($savePath, $audioData);
+
+        // public/audio/tts_yyyymmddhhmmss.mp3 のようなパスを返す
+        return 'ai_audio/' . $fileName;
+    }
 }
