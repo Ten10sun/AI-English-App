@@ -12,7 +12,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
     const audioChunksRef = useRef([]);
     const audioRefs = useRef({});
     const latestAiAudioRef = useRef(null);
-    const [playedIdx, setPlayedIdx] = useState(null);
+    const [playingIdx, setPlayingIdx] = useState(null);
     const [autoPlayFailedIdx, setAutoPlayFailedIdx] = useState(null);
 
     const handleMouseDown = (e) => {
@@ -162,7 +162,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
         latestAiAudioRef.current = audio;
         audio.play()
             .then(() => {
-                setPlayedIdx(latestIdx);
+                setPlayingIdx(latestIdx);
                 setAutoPlayFailedIdx(null);
             })
             .catch(() => {
@@ -172,15 +172,37 @@ export default function Show({ threads = [], messages = [], threadId }) {
 
     const handlePlayAudio = (audioPath, idx) => {
         if (!audioPath) return;
-        if (audioRefs.current[idx]) {
+        // すでに再生中なら停止
+        if (playingIdx === idx && audioRefs.current[idx]) {
             audioRefs.current[idx].pause();
             audioRefs.current[idx].currentTime = 0;
+            setPlayingIdx(null);
+            setAutoPlayFailedIdx(null);
+            return;
         }
+        // 他の再生中音声があれば停止
+        if (playingIdx !== null && audioRefs.current[playingIdx]) {
+            audioRefs.current[playingIdx].pause();
+            audioRefs.current[playingIdx].currentTime = 0;
+        }
+        // 新しく再生
         const audio = new Audio(`/storage/${audioPath}`);
         audioRefs.current[idx] = audio;
-        audio.play();
-        setPlayedIdx(idx);
-        setAutoPlayFailedIdx(null);
+        audio.onended = () => {
+            setPlayingIdx(null);
+        };
+        audio.onerror = (e) => {
+            alert('音声ファイルの再生に失敗しました: ' + audioPath);
+            setPlayingIdx(null);
+        };
+        audio.play()
+            .then(() => {
+                setPlayingIdx(idx);
+                setAutoPlayFailedIdx(null);
+            })
+            .catch((e) => {
+                setAutoPlayFailedIdx(idx);
+            });
     };
 
     return (
@@ -236,17 +258,20 @@ export default function Show({ threads = [], messages = [], threadId }) {
                                         className={`ml-2 p-2 rounded-full
                                             ${autoPlayFailedIdx === idx ? 'bg-yellow-400 animate-pulse' : 'bg-blue-400'}
                                             hover:bg-blue-500`}
-                                        title="音声再生"
+                                        title={playingIdx === idx ? "音声停止" : "音声再生"}
                                         onClick={() => handlePlayAudio(msg.audio_file_path, idx)}
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5"
-                                            viewBox="0 0 20 20"
-                                            fill={autoPlayFailedIdx === idx ? "black" : "white"}
-                                        >
-                                            <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V3l-5 4z"/>
-                                        </svg>
+                                        {playingIdx === idx ? (
+                                            // 停止アイコン
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
+                                                <rect x="6" y="6" width="8" height="8" rx="2" />
+                                            </svg>
+                                        ) : (
+                                            // 再生アイコン
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
+                                                <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V3l-5 4z"/>
+                                            </svg>
+                                        )}
                                     </button>
                                     {/* 言語切替ボタン */}
                                     <button
