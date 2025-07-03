@@ -120,4 +120,33 @@ class ApiService
         // public/audio/tts_yyyymmddhhmmss.mp3 のようなパスを返す
         return 'ai_audio/' . $fileName;
     }
+
+    // 英文を日本語に翻訳するAPI
+    public function callTranslateApi($text)
+    {
+        $apiKey = env('OPENAI_API_KEY');
+        $url = $this->baseUrl . '/v1/chat/completions';
+        $postData = [
+            'model' => 'gpt-4o-mini',
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => 'Translate the following English text into natural Japanese. Output only the translation.'
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $text
+                ]
+            ],
+        ];
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
+            'Content-Type' => 'application/json',
+        ])->post($url, $postData);
+        if ($response->failed()) {
+            throw new \Exception('翻訳APIリクエスト失敗: ' . $response->body());
+        }
+        $json = $response->json();
+        return $json['choices'][0]['message']['content'] ?? '';
+    }
 }

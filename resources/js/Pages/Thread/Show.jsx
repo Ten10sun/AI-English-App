@@ -14,6 +14,8 @@ export default function Show({ threads = [], messages = [], threadId }) {
     const latestAiAudioRef = useRef(null);
     const [playingIdx, setPlayingIdx] = useState(null);
     const [autoPlayFailedIdx, setAutoPlayFailedIdx] = useState(null);
+    const [translatingIdx, setTranslatingIdx] = useState(null);
+    const [translatedJas, setTranslatedJas] = useState({}); // { idx: ja }
 
     const handleMouseDown = (e) => {
         e.preventDefault();
@@ -205,6 +207,28 @@ export default function Show({ threads = [], messages = [], threadId }) {
             });
     };
 
+    // 翻訳ボタンクリック
+    const handleTranslate = async (msg, idx) => {
+        // すでに翻訳済みなら非表示トグル
+        if (translatedJas[idx]) {
+            setTranslatedJas(prev => {
+                const newObj = { ...prev };
+                delete newObj[idx];
+                return newObj;
+            });
+            return;
+        }
+        setTranslatingIdx(idx);
+        try {
+            const res = await axios.post(`/thread/${threadId}/message/${msg.id}/translate`);
+            setTranslatedJas(prev => ({ ...prev, [idx]: res.data.message_ja }));
+        } catch (e) {
+            alert('翻訳に失敗しました');
+        } finally {
+            setTranslatingIdx(null);
+        }
+    };
+
     return (
         <>
             <Head title="Show" />
@@ -242,64 +266,78 @@ export default function Show({ threads = [], messages = [], threadId }) {
                                 </div>
                             </div>
                         ) : (
-                            <div
-                                key={idx}
-                                className="flex justify-start items-center"
-                            >
-                                <span className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-bold mr-2">
-                                    AI
-                                </span>
-                                <div className="flex items-center">
-                                    <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
-                                        {msg.message_en}
-                                    </div>
-                                    {/* 音声再生ボタン */}
-                                    <button
-                                        className={`ml-2 p-2 rounded-full
-                                            ${autoPlayFailedIdx === idx ? 'bg-yellow-400 animate-pulse' : 'bg-blue-400'}
-                                            hover:bg-blue-500`}
-                                        title={playingIdx === idx ? "音声停止" : "音声再生"}
-                                        onClick={() => handlePlayAudio(msg.audio_file_path, idx)}
-                                    >
-                                        {playingIdx === idx ? (
-                                            // 停止アイコン
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
-                                                <rect x="6" y="6" width="8" height="8" rx="2" />
-                                            </svg>
-                                        ) : (
-                                            // 再生アイコン
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
-                                                <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V3l-5 4z"/>
-                                            </svg>
-                                        )}
-                                    </button>
-                                    {/* 言語切替ボタン */}
-                                    <button
-                                        className="ml-2 p-2 bg-gray-100 rounded-full hover:bg-gray-300"
-                                        title="言語切替"
-                                        onClick={() => {
-                                            /* TODO: 言語切替処理 */
-                                        }}
-                                    >
-                                        {/* Aあアイコン */}
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-gray-700"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
+                            <div key={idx}>
+                                <div className="flex justify-start items-center">
+                                    <span className="bg-gray-600 text-white px-4 py-2 rounded-full text-sm font-bold mr-2">
+                                        AI
+                                    </span>
+                                    <div className="flex items-center">
+                                        <div className="bg-gray-200 text-gray-900 px-6 py-2 rounded-lg font-bold text-lg flex items-center max-w-[60vw] break-words">
+                                            {msg.message_en}
+                                        </div>
+                                        {/* 音声再生ボタン */}
+                                        <button
+                                            className={`ml-2 p-2 rounded-full
+                                                ${autoPlayFailedIdx === idx ? 'bg-yellow-400 animate-pulse' : 'bg-blue-400'}
+                                                hover:bg-blue-500`}
+                                            title={playingIdx === idx ? "音声停止" : "音声再生"}
+                                            onClick={() => handlePlayAudio(msg.audio_file_path, idx)}
                                         >
-                                            <text
-                                                x="2"
-                                                y="17"
-                                                fontSize="12"
-                                                fontFamily="Arial"
+                                            {playingIdx === idx ? (
+                                                // 停止アイコン
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
+                                                    <rect x="6" y="6" width="8" height="8" rx="2" />
+                                                </svg>
+                                            ) : (
+                                                // 再生アイコン
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
+                                                    <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V3l-5 4z"/>
+                                                </svg>
+                                            )}
+                                        </button>
+                                        {/* 言語切替ボタン */}
+                                        <button
+                                            className="ml-2 p-2 bg-gray-100 rounded-full hover:bg-gray-300"
+                                            title="言語切替"
+                                            onClick={() => handleTranslate(msg, idx)}
+                                            disabled={translatingIdx === idx}
+                                        >
+                                            {/* Aあアイコン */}
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-5 w-5 text-gray-700"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
                                             >
-                                                Aあ
-                                            </text>
-                                        </svg>
-                                    </button>
+                                                <text
+                                                    x="2"
+                                                    y="17"
+                                                    fontSize="12"
+                                                    fontFamily="Arial"
+                                                >
+                                                    Aあ
+                                                </text>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
+                                {/* 翻訳結果をAI英文の直下に表示 */}
+                                {translatedJas[idx] && (
+                                    <div className="text-green-300 text-base font-bold bg-gray-800 rounded px-4 py-2 mt-1 ml-14 max-w-[60vw]">
+                                        {translatedJas[idx]}
+                                    </div>
+                                )}
+                                {/* 翻訳中スピナーも直下に */}
+                                {translatingIdx === idx && (
+                                    <div className="text-yellow-400 text-sm flex items-center gap-2 ml-14 mt-1">
+                                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                        </svg>
+                                        翻訳中...
+                                    </div>
+                                )}
                             </div>
                         )
                     })}

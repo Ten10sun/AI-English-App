@@ -43,7 +43,7 @@ class MessageController extends Controller
             // GPTにAPIリクエスト
             $gptResponse = $apiService->callGptApi($messages);
             $aiMessageText = $gptResponse['choices'][0]['message']['content'] ?? 'No response from GPT';
-                        // 音声データを保存する処理
+            // 音声データを保存する処理
             $aiMessage = Message::create([
                 'thread_id' => $threadId,
                 'message_en' => $aiMessageText,
@@ -70,5 +70,20 @@ class MessageController extends Controller
             'status' => 'error',
             'message' => 'No audio file provided'
         ], 400);
+    }
+
+    /**
+     *  英文を日本語に翻訳
+     */
+    public function translate(Request $request, int $threadId, int $messageId)
+    {
+        $message = Message::where('thread_id', $threadId)->where('id', $messageId)->firstOrFail();
+        $apiService = new ApiService();
+        $translated = $apiService->callTranslateApi($message->message_en);
+        $message->update(['message_ja' => $translated]);
+        return response()->json([
+            'status' => 'success',
+            'message_ja' => $translated,
+        ]);
     }
 }
