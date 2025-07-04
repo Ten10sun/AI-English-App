@@ -16,6 +16,12 @@ export default function Show({ threads = [], messages = [], threadId }) {
     const [autoPlayFailedIdx, setAutoPlayFailedIdx] = useState(null);
     const [translatingIdx, setTranslatingIdx] = useState(null);
     const [translatedJas, setTranslatedJas] = useState({}); // { idx: ja }
+    const prevMessagesRef = useRef([]);
+    const prevAICountRef = useRef(0);
+    const isFirstRender = useRef(true);
+    const [shouldAutoPlayNextAi, setShouldAutoPlayNextAi] = useState(false);
+    const [localMessages, setLocalMessages] = useState(messages);
+    const [highlightedAiId, setHighlightedAiId] = useState(null);
 
     const handleMouseDown = (e) => {
         e.preventDefault();
@@ -95,7 +101,10 @@ export default function Show({ threads = [], messages = [], threadId }) {
                                 },
                             }
                         );
-                        window.location.reload();
+                        setShouldAutoPlayNextAi(true); // 音声送信成功時にフラグON
+                        // 新しいmessagesを取得
+                        const res = await axios.get(`/thread/${threadId}/messages`);
+                        setLocalMessages(res.data.messages);
                     } catch (err) {
                         alert("音声の送信に失敗しました");
                     } finally {
@@ -149,37 +158,23 @@ export default function Show({ threads = [], messages = [], threadId }) {
         });
     };
 
-    // AIの最新メッセージのTTS音声を自動再生
+    // 新規AI返答が来た直後だけhighlightedAiIdをセット
     useEffect(() => {
-        const aiMessages = messages.filter(msg => msg.sender === "ai" && msg.audio_file_path);
-        if (aiMessages.length === 0) return;
-        const latestIdx = messages.lastIndexOf(aiMessages[aiMessages.length - 1]);
+        const aiMessages = localMessages.filter(msg => msg.sender === "ai" && msg.audio_file_path);
         const latestAiMsg = aiMessages[aiMessages.length - 1];
-
-        if (latestAiAudioRef.current) {
-            latestAiAudioRef.current.pause();
-            latestAiAudioRef.current.currentTime = 0;
+        if (aiMessages.length > prevAICountRef.current && latestAiMsg) {
+            setHighlightedAiId(latestAiMsg.id);
         }
-        const audio = new Audio(`/storage/${latestAiMsg.audio_file_path}`);
-        latestAiAudioRef.current = audio;
-        audio.play()
-            .then(() => {
-                setPlayingIdx(latestIdx);
-                setAutoPlayFailedIdx(null);
-            })
-            .catch(() => {
-                setAutoPlayFailedIdx(latestIdx);
-            });
-    }, [messages]);
+        prevAICountRef.current = aiMessages.length;
+    }, [localMessages]);
 
-    const handlePlayAudio = (audioPath, idx) => {
+    const handlePlayAudio = (audioPath, idx, messageId) => {
         if (!audioPath) return;
         // すでに再生中なら停止
         if (playingIdx === idx && audioRefs.current[idx]) {
             audioRefs.current[idx].pause();
             audioRefs.current[idx].currentTime = 0;
             setPlayingIdx(null);
-            setAutoPlayFailedIdx(null);
             return;
         }
         // 他の再生中音声があれば停止
@@ -187,7 +182,6 @@ export default function Show({ threads = [], messages = [], threadId }) {
             audioRefs.current[playingIdx].pause();
             audioRefs.current[playingIdx].currentTime = 0;
         }
-        // 新しく再生
         const audio = new Audio(`/storage/${audioPath}`);
         audioRefs.current[idx] = audio;
         audio.onended = () => {
@@ -197,14 +191,10 @@ export default function Show({ threads = [], messages = [], threadId }) {
             alert('音声ファイルの再生に失敗しました: ' + audioPath);
             setPlayingIdx(null);
         };
-        audio.play()
-            .then(() => {
-                setPlayingIdx(idx);
-                setAutoPlayFailedIdx(null);
-            })
-            .catch((e) => {
-                setAutoPlayFailedIdx(idx);
-            });
+        audio.play().then(() => {
+            setPlayingIdx(idx);
+            setHighlightedAiId(null); // 再生したら黄色解除
+        });
     };
 
     // 翻訳ボタンクリック
@@ -250,7 +240,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
                 <h1 className="text-2xl font-bold mb-6">英会話画面</h1>
                 {/* チャットエリア */}
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto px-4">
-                    {messages.map((msg, idx) => {
+                    {localMessages.map((msg, idx) => {
                         if (msg.sender === "ai") {
                             console.log('AI audio_file_path:', msg.audio_file_path);
                         }
@@ -277,20 +267,18 @@ export default function Show({ threads = [], messages = [], threadId }) {
                                         </div>
                                         {/* 音声再生ボタン */}
                                         <button
-                                            className={`ml-2 p-2 rounded-full
-                                                ${autoPlayFailedIdx === idx ? 'bg-yellow-400 animate-pulse' : 'bg-blue-400'}
-                                                hover:bg-blue-500`}
+                                            className={`ml-2 p-2 rounded-full ${highlightedAiId === msg.id ? 'bg-yellow-400 animate-pulse' : 'bg-blue-400'} hover:bg-blue-500`}
                                             title={playingIdx === idx ? "音声停止" : "音声再生"}
-                                            onClick={() => handlePlayAudio(msg.audio_file_path, idx)}
+                                            onClick={() => handlePlayAudio(msg.audio_file_path, idx, msg.id)}
                                         >
                                             {playingIdx === idx ? (
                                                 // 停止アイコン
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="white">
                                                     <rect x="6" y="6" width="8" height="8" rx="2" />
                                                 </svg>
                                             ) : (
                                                 // 再生アイコン
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill={autoPlayFailedIdx === idx ? "black" : "white"}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="white">
                                                     <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4l5 4V3l-5 4z"/>
                                                 </svg>
                                             )}

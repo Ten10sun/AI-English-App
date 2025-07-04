@@ -19,4 +19,7 @@ Route::middleware('auth')->group(function () {
     // メッセージを日本語に翻訳
     Route::post('/thread/{threadId}/message/{messageId}/translate', [MessageController::class, 'translate'])
         ->name('message.translate')->where('threadId', '[0-9]+')->where('messageId', '[0-9]+');
+    // メッセージ一覧取得
+    Route::get('/thread/{threadId}/messages', [MessageController::class, 'list'])
+        ->name('message.list')->where('threadId', '[0-9]+');
 });

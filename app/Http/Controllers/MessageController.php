@@ -86,4 +86,15 @@ class MessageController extends Controller
             'message_ja' => $translated,
         ]);
     }
+
+    /**
+     * スレッド内の全メッセージを返す
+     */
+    public function list($threadId)
+    {
+        $messages = Message::where('thread_id', $threadId)->orderBy('id')->get();
+        return response()->json([
+            'messages' => $messages
+        ]);
+    }
 }
