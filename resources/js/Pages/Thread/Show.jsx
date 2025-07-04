@@ -329,6 +329,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
                             </div>
                         )
                     })}
+                    <div style={{ height: "96px" }}></div> {/* w-20 h-20 = 80px + 余裕で96px */}
                 </div>
                 {/* ガイダンス */}
                 {autoPlayFailedIdx !== null && (
