@@ -2,6 +2,7 @@ import { Head } from '@inertiajs/react'
 import { SideMenu } from '@/Components/SideMenu'
 import LogoutButton from "@/Components/LogoutButton"
 import { useState } from 'react';
+import ContributionCalendar from "@/Components/ContributionCalendar";
 
 export default function Top({ threads = [] }) {
     const [sidebarWidth, setSidebarWidth] = useState(256);
@@ -27,7 +28,8 @@ export default function Top({ threads = [] }) {
         document.addEventListener('mouseup', stopDrag);
     };
 
-    const days = Array.from({ length: 70 }, (_, i) => i + 1); // 7x10 のグリッド
+    // 仮のデータ（例: ランダムな活動量）
+    const daysData = Array.from({ length: 70 }, () => Math.floor(Math.random() * 5));
 
     return (
         <>
@@ -38,17 +40,7 @@ export default function Top({ threads = [] }) {
                     <LogoutButton />
                 </div>
                 <h1 className="text-2xl font-bold mb-6">英会話学習記録</h1>
-                <div className="grid grid-cols-10 gap-4">
-                    {days.map((day) => {
-                        const bgColor = 'bg-gray-500';
-
-                        return (
-                            <div key={day} className={`aspect-square rounded-md ${bgColor}`}>
-                                {/* intentionally empty */}
-                            </div>
-                        );
-                    })}
-                </div>
+                <ContributionCalendar daysData={daysData} />
             </main>
         </>
     )
