@@ -48,16 +48,18 @@ export default function Top({ threads = [], activity = {} }) {
     return (
         <>
             <Head title="Top" />
-            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={() => {}} threads={threads} />
+            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} threads={threads} />
             <main style={{ marginLeft: `${sidebarWidth}px` }} className="flex-grow bg-[#424242] p-8 text-white min-h-screen">
                 <div className="flex justify-end mb-8">
                     <LogoutButton />
                 </div>
-                <h1 className="text-2xl font-bold mb-6">英会話学習記録</h1>
-                <div className="mb-6 text-lg text-green-200 font-semibold">
-                    英会話をするとカレンダーに草（色）が生えるよ！<br />
-                    たくさん会話して、カレンダーを緑でいっぱいにしよう！<br />
-                    <span className="text-yellow-300 font-bold">続けていくと花も咲くよ🌻</span>
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-6">英会話学習記録</h1>
+                    <div className="mb-6 text-lg text-green-200 font-semibold">
+                        英会話をするとカレンダーに草（色）が生えるよ！<br />
+                        たくさん会話して、カレンダーを緑でいっぱいにしよう！<br />
+                        <span className="text-yellow-300 font-bold">続けていくと花も咲くよ🌻</span>
+                    </div>
                 </div>
                 <ContributionCalendar daysData={daysData} />
             </main>
