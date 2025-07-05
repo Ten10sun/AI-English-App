@@ -29,8 +29,8 @@ export default function Top({ threads = [], activity = {} }) {
         document.addEventListener('mouseup', stopDrag);
     };
 
-    // 直近84日分（3か月分）の配列を作成
-    const days = 84;
+    // 直近182日分（半年分）の配列を作成
+    const days = 182;
     const today = new Date();
     const daysData = Array.from({ length: days }, (_, i) => {
         const date = format(subDays(today, days - 1 - i), "yyyy-MM-dd");

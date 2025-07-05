@@ -79,9 +79,9 @@ function getPastWeeks(weeksCount = 12) {
 }
 
 export default function ContributionCalendar({ daysData = [] }) {
-    const weeksCount = 12; // 3か月分
+    const weeksCount = 26; // 半年分
     const days = weeksCount * 7;
-    // 直近3か月分の週ごと配列
+    // 直近半年分の週ごと配列
     const weeks = getPastWeeks(weeksCount); // [ [日~土], ... ]
     // データがなければ0埋め
     const flatData = daysData.length === days
