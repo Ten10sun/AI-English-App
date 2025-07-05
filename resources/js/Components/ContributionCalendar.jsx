@@ -2,13 +2,14 @@ import React from "react";
 import { format, subDays, getMonth } from "date-fns";
 
 // 色分けロジック
-const COLOR_THRESHOLDS = [1, 3, 6, 10]; // 0,1,3,6,10回以上
+const COLOR_THRESHOLDS = [1, 3, 6, 10, 20]; // 0,1,3,6,10,20回以上
 const COLORS = [
     "bg-gray-500", // 0回（Less: 明るめグレー）
     "bg-github-1", // 1回以上
     "bg-github-2", // 3回以上
     "bg-github-3", // 6回以上
     "bg-github-4", // 10回以上
+    "bg-github-flower", // 20回以上（花）
 ];
 
 // 365日分
@@ -59,6 +60,7 @@ function groupByWeeks(dates) {
 // ここまで必須！-------------------------
 
 const getColor = (count) => {
+    if (count >= COLOR_THRESHOLDS[4]) return COLORS[5]; // 20回以上は花
     if (count >= COLOR_THRESHOLDS[3]) return COLORS[4];
     if (count >= COLOR_THRESHOLDS[2]) return COLORS[3];
     if (count >= COLOR_THRESHOLDS[1]) return COLORS[2];

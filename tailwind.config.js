@@ -24,6 +24,7 @@ export default {
                 'github-2': '#006d32',
                 'github-3': '#26a641',
                 'github-4': '#39d353',
+                'github-flower': '#ff69b4',
             },
         },
     },
