@@ -54,6 +54,10 @@ export default function Top({ threads = [], activity = {} }) {
                     <LogoutButton />
                 </div>
                 <h1 className="text-2xl font-bold mb-6">英会話学習記録</h1>
+                <div className="mb-6 text-lg text-green-200 font-semibold">
+                    英会話をするとカレンダーに草（色）が生えます！<br />
+                    たくさん会話して、カレンダーを緑でいっぱいにしよう！
+                </div>
                 <ContributionCalendar daysData={daysData} />
             </main>
         </>
