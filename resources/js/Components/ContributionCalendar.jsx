@@ -69,9 +69,10 @@ const getColor = (count) => {
 };
 
 // 直近N週間分の日付配列を作成（今日を含む）
-function getPastWeeks(weeksCount = 12) {
+function getPastWeeks(weeksCount = 26) {
     const today = new Date();
     const days = weeksCount * 7;
+    // 今日を含む直近N週間分の配列
     const dates = Array.from({ length: days }, (_, i) => subDays(today, days - 1 - i));
     const weeks = [];
     for (let i = 0; i < days; i += 7) {
@@ -83,7 +84,7 @@ function getPastWeeks(weeksCount = 12) {
 export default function ContributionCalendar({ daysData = [] }) {
     const weeksCount = 26; // 半年分
     const days = weeksCount * 7;
-    // 直近半年分の週ごと配列
+    // 直近半年分の週ごと配列（右端が今週）
     const weeks = getPastWeeks(weeksCount); // [ [日~土], ... ]
     // データがなければ0埋め
     const flatData = daysData.length === days
@@ -97,90 +98,52 @@ export default function ContributionCalendar({ daysData = [] }) {
     const cellSize = 20;
     const cellGap = 4;
 
-    // 年月ラベル（左上の日付から取得、英語表記）
-    const firstDate = weeks[0][0];
-    const yearMonthLabel = firstDate
-        ? `${firstDate.toLocaleString('en-US', { month: 'long' })} ${firstDate.getFullYear()}`
-        : "";
-
-    // 月ラベルの計算（各週の最初の日付が月初なら月名を表示）
-    const monthLabels = weeks.map((week, idx) => {
-        const firstDate = week[0];
-        if (!firstDate) return "";
-        // 最初の週は必ず表示
-        if (idx === 0) {
-            return firstDate.toLocaleString('en-US', { month: 'short' });
-        }
-        // 直前の週と月が異なる場合も表示
-        const prevDate = weeks[idx - 1][0];
-        if (prevDate && prevDate.getMonth() !== firstDate.getMonth()) {
-            return firstDate.toLocaleString('en-US', { month: 'short' });
-        }
-        // 今週の中に「今日」と同じ年月日が含まれていれば表示
-        const today = new Date();
-        if (
-            week.some(date =>
-                date &&
-                date.getFullYear() === today.getFullYear() &&
-                date.getMonth() === today.getMonth() &&
-                date.getDate() === today.getDate()
-            )
-        ) {
-            return today.toLocaleString('en-US', { month: 'short' });
-        }
-        // 今週の中に今月の1日が含まれていれば表示
-        if (
-            week.some(date =>
-                date &&
-                date.getFullYear() === today.getFullYear() &&
-                date.getMonth() === today.getMonth() &&
-                date.getDate() === 1
-            )
-        ) {
-            return today.toLocaleString('en-US', { month: 'short' });
-        }
-        return "";
-    });
-
-    // 年ラベルの計算（年が切り替わる月の上だけ表示）
+    // 年ラベル（各週の最初の日付で判定）
     const yearLabels = weeks.map((week, idx) => {
         const firstDate = week[0];
         if (!firstDate) return "";
-        // 最初の週は必ず表示
         if (idx === 0) return firstDate.getFullYear();
-        // 直前の週と年が異なる場合のみ表示
         const prevDate = weeks[idx - 1][0];
         if (prevDate && prevDate.getFullYear() !== firstDate.getFullYear()) {
             return firstDate.getFullYear();
         }
         return "";
     });
+    // 月ラベル（週の中に1日があればその月をラベルに、なければ週の一番上の月）
+    const monthLabels = weeks.map((week, idx) => {
+        // その週の中に「1日」があるか探す
+        const firstOfMonth = week.find(date => date && date.getDate() === 1);
+        if (firstOfMonth) {
+            // 1日があれば、その月をラベルに
+            return firstOfMonth.toLocaleString('en-US', { month: 'short' });
+        }
+        // 1日がなければ、前の週と月が異なる場合のみ表示
+        const firstDate = week[0];
+        if (!firstDate) return "";
+        if (idx === 0) {
+            return firstDate.toLocaleString('en-US', { month: 'short' });
+        }
+        const prevWeek = weeks[idx - 1];
+        // 前の週の中に1日がある場合、その月は既にラベル表示済みなので重複させない
+        const prevHasFirst = prevWeek.find(date => date && date.getDate() === 1);
+        if (prevHasFirst) {
+            return "";
+        }
+        const prevDate = prevWeek[0];
+        if (prevDate && prevDate.getMonth() !== firstDate.getMonth()) {
+            return firstDate.toLocaleString('en-US', { month: 'short' });
+        }
+        return "";
+    });
 
     return (
         <div>
-            {/* 年ラベル（カレンダー本体の上） */}
-            <div style={{ display: 'flex', marginLeft: `${32 + 2}px`, marginBottom: '2px' }}>
-                {yearLabels.map((label, idx) => (
-                    <div key={idx} style={{ width: `${cellSize + cellGap}px`, textAlign: 'center', fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>{label}</div>
-                ))}
-            </div>
-            {/* 月ラベル（カレンダー本体の上） */}
-            <div style={{ display: 'flex', marginLeft: `${32 + 2}px`, marginBottom: '4px' }}>
-                {monthLabels.map((label, idx) => (
-                    <div key={idx} style={{ width: `${cellSize + cellGap}px`, textAlign: 'center', fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>{label}</div>
-                ))}
-            </div>
-            {/* カレンダー本体（曜日・マス） */}
-            <div className="flex" style={{ alignItems: "flex-start" }}>
-                {/* 曜日ラベル（縦） */}
-                <div
-                    className="flex flex-col mr-2"
-                    style={{
-                        height: `${cellSize * 7 + cellGap * 6}px`,
-                        justifyContent: "center",
-                        minWidth: "32px",
-                    }}
-                >
+            {/* 年・月ラベル＋カレンダー本体（横スクロール） */}
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                {/* 曜日ラベル（固定） */}
+                <div className="flex flex-col mr-2" style={{ minWidth: '32px' }}>
+                    {/* 上部の空白（年・月ラベル分） */}
+                    <div style={{ height: `${cellSize * 2 + cellGap * 2}px` }} />
                     {WEEKDAY_LABELS.map((label, idx) => (
                         <div
                             key={idx}
@@ -199,23 +162,38 @@ export default function ContributionCalendar({ daysData = [] }) {
                         </div>
                     ))}
                 </div>
-                {/* カレンダー本体（12週間分） */}
-                <div className="flex">
-                    {weeks.map((week, colIdx) => (
-                        <div key={colIdx} className="flex flex-col">
-                            {week.map((date, rowIdx) => (
-                                <div
-                                    key={rowIdx}
-                                    className={`w-5 h-5 rounded ${date ? getColor(dateToCount[format(date, "yyyy-MM-dd")] || 0) : "bg-transparent"}`}
-                                    style={{
-                                        marginBottom: rowIdx !== 6 ? `${cellGap}px` : 0,
-                                        marginLeft: "2px",
-                                        marginRight: "2px",
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    ))}
+                {/* 年・月ラベル＋カレンダー本体（横スクロール） */}
+                <div style={{ overflowX: 'auto', width: '100%', paddingBottom: '16px' }}>
+                    {/* 年ラベル */}
+                    <div style={{ display: 'flex', marginBottom: '2px', minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
+                        {yearLabels.map((label, idx) => (
+                            <div key={idx} style={{ width: `${cellSize + cellGap}px`, textAlign: 'center', fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>{label}</div>
+                        ))}
+                    </div>
+                    {/* 月ラベル */}
+                    <div style={{ display: 'flex', marginBottom: '4px', minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
+                        {monthLabels.map((label, idx) => (
+                            <div key={idx} style={{ width: `${cellSize + cellGap}px`, textAlign: 'center', fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>{label}</div>
+                        ))}
+                    </div>
+                    {/* カレンダー本体（N週間分） */}
+                    <div className="flex" style={{ alignItems: "flex-start", minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
+                        {weeks.map((week, colIdx) => (
+                            <div key={colIdx} className="flex flex-col">
+                                {week.map((date, rowIdx) => (
+                                    <div
+                                        key={rowIdx}
+                                        className={`w-5 h-5 rounded ${date ? getColor(dateToCount[format(date, "yyyy-MM-dd")] || 0) : "bg-transparent"}`}
+                                        style={{
+                                            marginBottom: rowIdx !== 6 ? `${cellGap}px` : 0,
+                                            marginLeft: "2px",
+                                            marginRight: "2px",
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
             {/* 凡例（カレンダー下、中央揃え） */}
