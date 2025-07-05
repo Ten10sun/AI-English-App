@@ -18,6 +18,13 @@ export default {
             animation: {
                 'spin-slow': 'spin 2.5s linear infinite',
             },
+            colors: {
+                'github-0': '#161b22',
+                'github-1': '#0e4429',
+                'github-2': '#006d32',
+                'github-3': '#26a641',
+                'github-4': '#39d353',
+            },
         },
     },
 

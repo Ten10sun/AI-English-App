@@ -3,8 +3,9 @@ import { SideMenu } from '@/Components/SideMenu'
 import LogoutButton from "@/Components/LogoutButton"
 import { useState } from 'react';
 import ContributionCalendar from "@/Components/ContributionCalendar";
+import { subDays, format } from "date-fns";
 
-export default function Top({ threads = [] }) {
+export default function Top({ threads = [], activity = {} }) {
     const [sidebarWidth, setSidebarWidth] = useState(256);
 
     const handleMouseDown = (e) => {
@@ -28,13 +29,26 @@ export default function Top({ threads = [] }) {
         document.addEventListener('mouseup', stopDrag);
     };
 
-    // 仮のデータ（例: ランダムな活動量）
-    const daysData = Array.from({ length: 70 }, () => Math.floor(Math.random() * 5));
+    // 直近84日分（3か月分）の配列を作成
+    const days = 84;
+    const today = new Date();
+    const daysData = Array.from({ length: days }, (_, i) => {
+        const date = format(subDays(today, days - 1 - i), "yyyy-MM-dd");
+        return activity[date] || 0;
+    });
+
+    const getColor = (count) => {
+        if (count >= 10) return "bg-github-4";
+        if (count >= 6) return "bg-github-3";
+        if (count >= 3) return "bg-github-2";
+        if (count >= 1) return "bg-github-1";
+        return "bg-github-0";
+    };
 
     return (
         <>
             <Head title="Top" />
-            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} threads={threads} />
+            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={() => {}} threads={threads} />
             <main style={{ marginLeft: `${sidebarWidth}px` }} className="flex-grow bg-[#424242] p-8 text-white min-h-screen">
                 <div className="flex justify-end mb-8">
                     <LogoutButton />
