@@ -58,7 +58,7 @@ export default function Top({ threads = [], activity = {} }) {
                     <div className="mb-6 text-lg text-green-200 font-semibold">
                         英会話をするとカレンダーに草（色）が生えるよ！<br />
                         たくさん会話して、カレンダーを緑でいっぱいにしよう！<br />
-                        <span className="text-yellow-300 font-bold">続けていくと花も咲くよ🌻</span>
+                        <span className="text-yellow-300 font-bold">頑張れば花も咲くよ🌻</span>
                     </div>
                 </div>
                 <ContributionCalendar daysData={daysData} />
