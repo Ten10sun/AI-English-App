@@ -1,4 +1,3 @@
 {
-    "public": "public",
-    "outputDirectory": "public/build"
+    "public": "public"
 }
