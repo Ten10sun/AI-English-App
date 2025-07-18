@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "flowbite-react";
-import { HiChatBubbleLeftRight, HiPlusCircle } from "react-icons/hi2";
+import { HiChatBubbleLeftRight, HiPlusCircle, HiTrash } from "react-icons/hi2";
 import { Link, router } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -11,6 +11,7 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
     const [editingTitle, setEditingTitle] = useState('');
     const [localThreads, setLocalThreads] = useState(threads);
     const clickTimeout = useRef(null);
+    const [hoveredThreadId, setHoveredThreadId] = useState(null);
 
     useEffect(() => {
         setLocalThreads(threads);
@@ -43,6 +44,15 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
         }
         setEditingThreadId(null);
         setEditingTitle('');
+    };
+
+    // スレッド削除ハンドラ（仮実装）
+    const handleDeleteThread = (threadId) => {
+        if (window.confirm('本当にこのスレッドを削除しますか？（元に戻せません）')) {
+            // ここでAPI呼び出し予定
+            setLocalThreads(localThreads.filter(t => t.id !== threadId));
+            // TODO: バックエンド連携
+        }
     };
 
     return (
@@ -104,7 +114,7 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                                 ) : (
                                     <div
                                         key={thread.id}
-                                        className="flex items-center gap-2 p-2 hover:bg-[#5a8a5d] rounded-lg mb-1 cursor-pointer"
+                                        className="flex items-center justify-between gap-2 p-2 hover:bg-[#5a8a5d] rounded-lg mb-1 cursor-pointer"
                                         onClick={e => {
                                             if (editingThreadId === thread.id) return;
                                             if (clickTimeout.current) clearTimeout(clickTimeout.current);
@@ -117,9 +127,33 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                                             e.stopPropagation();
                                             handleTitleDoubleClick(thread);
                                         }}
+                                        onMouseEnter={() => setHoveredThreadId(thread.id)}
+                                        onMouseLeave={() => setHoveredThreadId(null)}
                                     >
-                                        <HiChatBubbleLeftRight className="h-6 w-6 text-white" />
-                                        <span className="text-white">{thread.title}</span>
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <HiChatBubbleLeftRight className="h-6 w-6 text-white flex-shrink-0" />
+                                            <span className="text-white truncate" style={{maxWidth: '120px'}}>{thread.title}</span>
+                                        </div>
+                                        {hoveredThreadId === thread.id ? (
+                                            <button
+                                                className="p-0.5 rounded transition-colors duration-150 group flex items-center justify-center"
+                                                title="スレッド削除"
+                                                style={{marginLeft: '4px'}}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    handleDeleteThread(thread.id);
+                                                }}
+                                            >
+                                                <span className="group-hover:bg-red-600 rounded p-0.5 transition-colors duration-150 flex items-center justify-center">
+                                                    <HiTrash className="h-5 w-5 text-white" />
+                                                </span>
+                                            </button>
+                                        ) : (
+                                            // ゴミ箱アイコン用スペースを常に確保（透明アイコン）
+                                            <span style={{width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px'}}>
+                                                <HiTrash className="h-5 w-5 text-transparent" />
+                                            </span>
+                                        )}
                                     </div>
                                 )
                             ))}
