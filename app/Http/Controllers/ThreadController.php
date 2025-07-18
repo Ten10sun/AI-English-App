@@ -93,6 +93,7 @@ class ThreadController extends Controller
      */
     public function destroy(Thread $thread)
     {
-        //
+        $thread->delete(); // 紐づくメッセージもDBのonDelete cascadeで自動削除
+        return response()->noContent();
     }
 }

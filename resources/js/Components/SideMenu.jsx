@@ -47,11 +47,15 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
     };
 
     // スレッド削除ハンドラ（仮実装）
-    const handleDeleteThread = (threadId) => {
+    const handleDeleteThread = async (threadId) => {
         if (window.confirm('本当にこのスレッドを削除しますか？（元に戻せません）')) {
-            // ここでAPI呼び出し予定
-            setLocalThreads(localThreads.filter(t => t.id !== threadId));
-            // TODO: バックエンド連携
+            try {
+                await axios.delete(route('thread.destroy', { thread: threadId }));
+                setLocalThreads(localThreads.filter(t => t.id !== threadId));
+                // TODO: onThreadTitleUpdateも呼ぶ場合はここで
+            } catch (e) {
+                alert('スレッドの削除に失敗しました');
+            }
         }
     };
 

@@ -23,4 +23,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/thread/{threadId}/messages', [MessageController::class, 'list'])
         ->name('message.list')->where('threadId', '[0-9]+');
     Route::put('/thread/{thread}', [ThreadController::class, 'update'])->name('thread.update');
+    Route::delete('/thread/{thread}', [ThreadController::class, 'destroy'])->name('thread.destroy');
 });
