@@ -32,9 +32,19 @@ export default function Top({ threads = [], activity = {} }) {
     // 直近182日分（半年分）の配列を作成
     const days = 182;
     const today = new Date();
-    const daysData = Array.from({ length: days }, (_, i) => {
-        const date = format(subDays(today, days - 1 - i), "yyyy-MM-dd");
-        return activity[date] || 0;
+    const todayDay = today.getDay(); // 0:日, ..., 6:土
+    const weeksCount = Math.ceil((days + todayDay + 1) / 7);
+    let dates = Array.from({ length: days }, (_, i) => subDays(today, days - 1 - i));
+    // 先頭に(todayDay + 1)個nullを追加
+    dates = [ ...Array(todayDay + 1).fill(null), ...dates ];
+    // 必要なら末尾にnullを追加して長さをweeksCount*7に揃える
+    if (dates.length < weeksCount * 7) {
+        dates = [ ...dates, ...Array(weeksCount * 7 - dates.length).fill(null) ];
+    }
+    const daysData = dates.map(date => {
+        if (!date) return null;
+        const key = format(date, "yyyy-MM-dd");
+        return activity[key] || 0;
     });
 
     const getColor = (count) => {
@@ -61,7 +71,7 @@ export default function Top({ threads = [], activity = {} }) {
                         <span className="text-yellow-300 font-bold">頑張れば花も咲くよ🌻</span>
                     </div>
                 </div>
-                <ContributionCalendar daysData={daysData} />
+                <ContributionCalendar daysData={daysData} dates={dates} />
             </main>
         </>
     )

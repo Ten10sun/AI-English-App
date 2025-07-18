@@ -81,22 +81,23 @@ function getPastWeeks(weeksCount = 26) {
     return weeks;
 }
 
-export default function ContributionCalendar({ daysData = [] }) {
-    const weeksCount = 26; // 半年分
-    const days = weeksCount * 7;
-    // 直近半年分の週ごと配列（右端が今週）
-    const weeks = getPastWeeks(weeksCount); // [ [日~土], ... ]
-    // データがなければ0埋め
-    const flatData = daysData.length === days
-        ? daysData
-        : Array.from({ length: days }, () => 0);
+export default function ContributionCalendar({ daysData = [], dates = [] }) {
+    const cellSize = 20;
+    const cellGap = 4;
+    // 週ごとに分割
+    const weeks = [];
+    for (let i = 0; i < dates.length; i += 7) {
+        weeks.push(dates.slice(i, i + 7));
+    }
+    // デバッグ: 右端の列（今週）の各曜日の日付を出力
+    if (weeks.length > 0) {
+        console.log('今週の各曜日:', weeks[weeks.length - 1].map(date => date ? date.toLocaleDateString() : null));
+    }
     // 日付→活動量
     const dateToCount = {};
     weeks.flat().forEach((date, i) => {
-        dateToCount[format(date, "yyyy-MM-dd")] = flatData[i];
+        dateToCount[format(date, "yyyy-MM-dd")] = daysData[i];
     });
-    const cellSize = 20;
-    const cellGap = 4;
 
     // 年ラベル（各週の最初の日付で判定）
     const yearLabels = weeks.map((week, idx) => {
@@ -142,8 +143,8 @@ export default function ContributionCalendar({ daysData = [] }) {
             <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                 {/* 曜日ラベル（固定） */}
                 <div className="flex flex-col mr-2" style={{ minWidth: '32px' }}>
-                    {/* 上部の空白（年・月ラベル分） */}
-                    <div style={{ height: `${cellSize * 2 + cellGap * 2}px` }} />
+                    {/* 1マス分の空白だけを追加 */}
+                    <div style={{ height: `${cellSize*1.4}px` }} />
                     {WEEKDAY_LABELS.map((label, idx) => (
                         <div
                             key={idx}
@@ -180,17 +181,21 @@ export default function ContributionCalendar({ daysData = [] }) {
                     <div className="flex" style={{ alignItems: "flex-start", minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
                         {weeks.map((week, colIdx) => (
                             <div key={colIdx} className="flex flex-col">
-                                {week.map((date, rowIdx) => (
-                                    <div
-                                        key={rowIdx}
-                                        className={`w-5 h-5 rounded ${date ? getColor(dateToCount[format(date, "yyyy-MM-dd")] || 0) : "bg-transparent"}`}
-                                        style={{
-                                            marginBottom: rowIdx !== 6 ? `${cellGap}px` : 0,
-                                            marginLeft: "2px",
-                                            marginRight: "2px",
-                                        }}
-                                    />
-                                ))}
+                                {week.map((date, rowIdx) => {
+                                    const idx = colIdx * 7 + rowIdx;
+                                    const count = daysData[idx];
+                                    return (
+                                        <div
+                                            key={rowIdx}
+                                            className={`w-5 h-5 rounded ${date ? getColor(count || 0) : "bg-transparent"}`}
+                                            style={{
+                                                marginBottom: rowIdx !== 6 ? `${cellGap}px` : 0,
+                                                marginLeft: "2px",
+                                                marginRight: "2px",
+                                            }}
+                                        />
+                                    );
+                                })}
                             </div>
                         ))}
                     </div>
