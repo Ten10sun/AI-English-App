@@ -83,7 +83,9 @@ class ThreadController extends Controller
      */
     public function update(UpdateThreadRequest $request, Thread $thread)
     {
-        //
+        $thread->title = $request->input('title');
+        $thread->save();
+        return response()->noContent();
     }
 
     /**

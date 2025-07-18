@@ -22,4 +22,5 @@ Route::middleware('auth')->group(function () {
     // メッセージ一覧取得
     Route::get('/thread/{threadId}/messages', [MessageController::class, 'list'])
         ->name('message.list')->where('threadId', '[0-9]+');
+    Route::put('/thread/{thread}', [ThreadController::class, 'update'])->name('thread.update');
 });
