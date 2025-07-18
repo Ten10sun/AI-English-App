@@ -1,6 +1,7 @@
 import { Head } from "@inertiajs/react";
 import { SideMenu } from "@/Components/SideMenu";
 import LogoutButton from "@/Components/LogoutButton";
+import BackToTopButton from "@/Components/BackToTopButton";
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
@@ -234,7 +235,8 @@ export default function Show({ threads = [], messages = [], threadId }) {
                 }}
                 className="flex-grow p-8 text-white relative overflow-y-auto h-screen"
             >
-                <div className="flex justify-end mb-8">
+                <div className="flex justify-between mb-8">
+                    <BackToTopButton />
                     <LogoutButton />
                 </div>
                 <h1 className="text-2xl font-bold mb-6">英会話画面</h1>

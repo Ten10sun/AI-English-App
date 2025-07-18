@@ -1,15 +1,13 @@
 import { Link } from '@inertiajs/react';
 
-export default function LogoutButton({ className = '', ...props }) {
+export default function BackToTopButton({ className = '', ...props }) {
     return (
         <Link
-            href={route('logout')}
-            method="post"
-            as="button"
+            href={route('top')}
             className={`px-6 py-2 bg-[#4A6D4D] text-white font-semibold rounded-lg hover:bg-[#5a8a5d] ${className}`}
             {...props}
         >
-            ログアウト
+            トップに戻る
         </Link>
     );
 }
