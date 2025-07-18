@@ -6,7 +6,7 @@ import { Link, router } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threads = [], onThreadTitleUpdate }) {
+export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threads = [], onThreadTitleUpdate, currentThreadId }) {
     const [editingThreadId, setEditingThreadId] = useState(null);
     const [editingTitle, setEditingTitle] = useState('');
     const [localThreads, setLocalThreads] = useState(threads);
@@ -118,7 +118,9 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                                 ) : (
                                     <div
                                         key={thread.id}
-                                        className="flex items-center justify-between gap-2 p-2 hover:bg-[#5a8a5d] rounded-lg mb-1 cursor-pointer"
+                                        className={`flex items-center justify-between gap-2 p-2 rounded-lg mb-1 cursor-pointer ${
+                                            hoveredThreadId === thread.id || currentThreadId === thread.id ? 'bg-[#5a8a5d]' : ''
+                                        }`}
                                         onClick={e => {
                                             if (editingThreadId === thread.id) return;
                                             if (clickTimeout.current) clearTimeout(clickTimeout.current);

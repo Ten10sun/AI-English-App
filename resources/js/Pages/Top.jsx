@@ -58,7 +58,7 @@ export default function Top({ threads = [], activity = {} }) {
     return (
         <>
             <Head title="Top" />
-            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} threads={threads} />
+            <SideMenu sidebarWidth={sidebarWidth} handleMouseDown={handleMouseDown} threads={threads} currentThreadId={null} />
             <main style={{ marginLeft: `${sidebarWidth}px` }} className="flex-grow bg-[#424242] p-8 text-white min-h-screen">
                 <div className="flex justify-end mb-8">
                     <LogoutButton />

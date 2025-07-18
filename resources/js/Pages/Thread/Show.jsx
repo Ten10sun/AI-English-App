@@ -227,6 +227,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
                 sidebarWidth={sidebarWidth}
                 handleMouseDown={handleMouseDown}
                 threads={threads}
+                currentThreadId={threadId}
             />
             <main
                 style={{
