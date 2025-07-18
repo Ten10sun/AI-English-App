@@ -12,10 +12,38 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
     const [localThreads, setLocalThreads] = useState(threads);
     const clickTimeout = useRef(null);
     const [hoveredThreadId, setHoveredThreadId] = useState(null);
+    const menuScrollRef = useRef(null);
+    const currentThreadRef = useRef(null);
 
     useEffect(() => {
         setLocalThreads(threads);
     }, [threads]);
+
+    // スクロール位置の復元
+    useEffect(() => {
+        const savedScroll = localStorage.getItem('sideMenuScrollTop');
+        if (menuScrollRef.current && savedScroll) {
+            setTimeout(() => {
+                menuScrollRef.current.scrollTop = parseInt(savedScroll, 10);
+                localStorage.removeItem('sideMenuScrollTop');
+            }, 120);
+        }
+    }, [localThreads]);
+
+    // スクロール位置の保存
+    const handleThreadClick = (threadId, callback) => {
+        if (menuScrollRef.current) {
+            localStorage.setItem('sideMenuScrollTop', menuScrollRef.current.scrollTop);
+        }
+        if (callback) callback();
+    };
+
+    // 選択中スレッドを中央にスクロール
+    useEffect(() => {
+        if (currentThreadRef.current) {
+            currentThreadRef.current.scrollIntoView({ block: 'center', behavior: 'auto' });
+        }
+    }, [currentThreadId, localThreads]);
 
     // 編集済みかどうかを判定するためのヘルパー
     const isInitialTitle = (title) => {
@@ -72,100 +100,105 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                 </Link>
             </div>
             <div className="flex-1 min-h-0">
-                <Sidebar aria-label="Side menu" className="w-full h-full bg-inherit flex-1" theme={{
-                    root: {
-                        base: "h-full flex-1",
-                        inner: "h-full flex-1 overflow-y-auto overflow-x-hidden rounded bg-inherit px-3 py-0",
-                    },
-                    item: {
-                        base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-white hover:bg-[#5a8a5d]",
-                        icon: {
-                            base: "h-6 w-6 flex-shrink-0 text-white transition duration-75 group-hover:text-white",
+                <div className="h-full flex-1 overflow-y-auto" ref={menuScrollRef}>
+                    <Sidebar aria-label="Side menu" className="w-full h-full bg-inherit flex-1" theme={{
+                        root: {
+                            base: "h-full flex-1",
+                            inner: "h-full flex-1 overflow-y-auto overflow-x-hidden rounded bg-inherit px-3 py-0",
+                        },
+                        item: {
+                            base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-white hover:bg-[#5a8a5d]",
+                            icon: {
+                                base: "h-6 w-6 flex-shrink-0 text-white transition duration-75 group-hover:text-white",
+                            }
                         }
-                    }
-                }}>
-                    <Sidebar.Items className="h-full flex-1 overflow-y-auto">
-                        <Sidebar.ItemGroup>
-                            <Sidebar.Item
-                                href={route('thread.store')}
-                                icon={() => (
-                                    <span
-                                        className="bg-[#4A6D4D] rounded-full p-1 flex items-center justify-center"
-                                    >
-                                        <HiPlusCircle className="h-6 w-6 text-white" />
-                                    </span>
-                                )}
-                            >
-                                新規スレッド作成
-                            </Sidebar.Item>
-                            {localThreads.map(thread => (
-                                editingThreadId === thread.id ? (
-                                    <div key={thread.id} className="flex items-center gap-2 p-2 bg-[#5a8a5d] rounded-lg mb-1">
-                                        <HiChatBubbleLeftRight className="h-6 w-6 text-white" />
-                                        <input
-                                            type="text"
-                                            value={editingTitle}
-                                            autoFocus
-                                            onChange={e => setEditingTitle(e.target.value)}
-                                            onBlur={() => handleTitleSave(thread.id)}
-                                            onKeyDown={e => {
-                                                if (e.key === 'Enter') handleTitleSave(thread.id);
-                                                if (e.key === 'Escape') { setEditingThreadId(null); setEditingTitle(''); }
-                                            }}
-                                            className="w-full rounded px-2 py-1 text-black"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        key={thread.id}
-                                        className={`flex items-center justify-between gap-2 p-2 rounded-lg mb-1 cursor-pointer ${
-                                            hoveredThreadId === thread.id || currentThreadId === thread.id ? 'bg-[#5a8a5d]' : ''
-                                        }`}
-                                        onClick={e => {
-                                            if (editingThreadId === thread.id) return;
-                                            if (clickTimeout.current) clearTimeout(clickTimeout.current);
-                                            clickTimeout.current = setTimeout(() => {
-                                                router.visit(route('thread.show', { threadId: thread.id }));
-                                            }, 200);
-                                        }}
-                                        onDoubleClick={e => {
-                                            if (clickTimeout.current) clearTimeout(clickTimeout.current);
-                                            e.stopPropagation();
-                                            handleTitleDoubleClick(thread);
-                                        }}
-                                        onMouseEnter={() => setHoveredThreadId(thread.id)}
-                                        onMouseLeave={() => setHoveredThreadId(null)}
-                                    >
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            <HiChatBubbleLeftRight className="h-6 w-6 text-white flex-shrink-0" />
-                                            <span className="text-white truncate" style={{maxWidth: '120px'}}>{thread.title}</span>
-                                        </div>
-                                        {hoveredThreadId === thread.id ? (
-                                            <button
-                                                className="p-0.5 rounded transition-colors duration-150 group flex items-center justify-center"
-                                                title="スレッド削除"
-                                                style={{marginLeft: '4px'}}
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    handleDeleteThread(thread.id);
+                    }}>
+                        <Sidebar.Items className="h-full flex-1">
+                            <Sidebar.ItemGroup>
+                                <Sidebar.Item
+                                    href={route('thread.store')}
+                                    icon={() => (
+                                        <span
+                                            className="bg-[#4A6D4D] rounded-full p-1 flex items-center justify-center"
+                                        >
+                                            <HiPlusCircle className="h-6 w-6 text-white" />
+                                        </span>
+                                    )}
+                                >
+                                    新規スレッド作成
+                                </Sidebar.Item>
+                                {localThreads.map(thread => (
+                                    editingThreadId === thread.id ? (
+                                        <div key={thread.id} className="flex items-center gap-2 p-2 bg-[#5a8a5d] rounded-lg mb-1">
+                                            <HiChatBubbleLeftRight className="h-6 w-6 text-white" />
+                                            <input
+                                                type="text"
+                                                value={editingTitle}
+                                                autoFocus
+                                                onChange={e => setEditingTitle(e.target.value)}
+                                                onBlur={() => handleTitleSave(thread.id)}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter') handleTitleSave(thread.id);
+                                                    if (e.key === 'Escape') { setEditingThreadId(null); setEditingTitle(''); }
                                                 }}
-                                            >
-                                                <span className="group-hover:bg-red-600 rounded p-0.5 transition-colors duration-150 flex items-center justify-center">
-                                                    <HiTrash className="h-5 w-5 text-white" />
+                                                className="w-full rounded px-2 py-1 text-black"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div
+                                            key={thread.id}
+                                            ref={currentThreadId === thread.id ? currentThreadRef : null}
+                                            className={`flex items-center justify-between gap-2 p-2 rounded-lg mb-1 cursor-pointer ${
+                                                hoveredThreadId === thread.id || currentThreadId === thread.id ? 'bg-[#5a8a5d]' : ''
+                                            }`}
+                                            onClick={e => {
+                                                if (editingThreadId === thread.id) return;
+                                                if (clickTimeout.current) clearTimeout(clickTimeout.current);
+                                                handleThreadClick(thread.id, () => {
+                                                    clickTimeout.current = setTimeout(() => {
+                                                        router.visit(route('thread.show', { threadId: thread.id }));
+                                                    }, 200);
+                                                });
+                                            }}
+                                            onDoubleClick={e => {
+                                                if (clickTimeout.current) clearTimeout(clickTimeout.current);
+                                                e.stopPropagation();
+                                                handleTitleDoubleClick(thread);
+                                            }}
+                                            onMouseEnter={() => setHoveredThreadId(thread.id)}
+                                            onMouseLeave={() => setHoveredThreadId(null)}
+                                        >
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <HiChatBubbleLeftRight className="h-6 w-6 text-white flex-shrink-0" />
+                                                <span className="text-white truncate" style={{maxWidth: '120px'}}>{thread.title}</span>
+                                            </div>
+                                            {hoveredThreadId === thread.id ? (
+                                                <button
+                                                    className="p-0.5 rounded transition-colors duration-150 group flex items-center justify-center"
+                                                    title="スレッド削除"
+                                                    style={{marginLeft: '4px'}}
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        handleDeleteThread(thread.id);
+                                                    }}
+                                                >
+                                                    <span className="group-hover:bg-red-600 rounded p-0.5 transition-colors duration-150 flex items-center justify-center">
+                                                        <HiTrash className="h-5 w-5 text-white" />
+                                                    </span>
+                                                </button>
+                                            ) : (
+                                                // ゴミ箱アイコン用スペースを常に確保（透明アイコン）
+                                                <span style={{width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px'}}>
+                                                    <HiTrash className="h-5 w-5 text-transparent" />
                                                 </span>
-                                            </button>
-                                        ) : (
-                                            // ゴミ箱アイコン用スペースを常に確保（透明アイコン）
-                                            <span style={{width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px'}}>
-                                                <HiTrash className="h-5 w-5 text-transparent" />
-                                            </span>
-                                        )}
-                                    </div>
-                                )
-                            ))}
-                        </Sidebar.ItemGroup>
-                    </Sidebar.Items>
-                </Sidebar>
+                                            )}
+                                        </div>
+                                    )
+                                ))}
+                            </Sidebar.ItemGroup>
+                        </Sidebar.Items>
+                    </Sidebar>
+                </div>
             </div>
         </div>
     );
