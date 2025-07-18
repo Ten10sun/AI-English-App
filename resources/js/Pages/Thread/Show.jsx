@@ -345,7 +345,7 @@ export default function Show({ threads = [], messages = [], threadId }) {
                     className={`fixed bottom-8 right-8 rounded-full w-20 h-20 flex items-center justify-center shadow-lg transition-colors duration-200 ${
                         isRecording
                             ? "bg-red-500 text-white animate-pulse"
-                            : "bg-white text-gray-900"
+                            : "bg-white text-gray-900 hover:bg-green-200 hover:text-green-900"
                     }`}
                     onClick={handleMicClick}
                     title={isRecording ? "録音停止" : "録音開始"}
