@@ -149,7 +149,11 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
                                             key={thread.id}
                                             ref={currentThreadId === thread.id ? currentThreadRef : null}
                                             className={`flex items-center justify-between gap-2 p-2 rounded-lg mb-1 cursor-pointer ${
-                                                hoveredThreadId === thread.id || currentThreadId === thread.id ? 'bg-[#5a8a5d]' : ''
+                                                currentThreadId === thread.id
+                                                    ? 'bg-[#7fc97f]'
+                                                    : hoveredThreadId === thread.id
+                                                        ? 'bg-[#5a8a5d]'
+                                                        : ''
                                             }`}
                                             onClick={e => {
                                                 if (editingThreadId === thread.id) return;
