@@ -24,7 +24,9 @@ function getPastDates(days) {
     const todayDay = today.getDay(); // 0:日, ..., 6:土
 
     // 365日前から今日までの日付配列
-    let dates = Array.from({ length: DAYS }, (_, i) => subDays(today, DAYS - 1 - i));
+    let dates = Array.from({ length: DAYS }, (_, i) =>
+        subDays(today, DAYS - 1 - i)
+    );
 
     // 右端の下側に「未来日」分だけnullを追加
     if (todayDay < 6) {
@@ -73,7 +75,9 @@ function getPastWeeks(weeksCount = 26) {
     const today = new Date();
     const days = weeksCount * 7;
     // 今日を含む直近N週間分の配列
-    const dates = Array.from({ length: days }, (_, i) => subDays(today, days - 1 - i));
+    const dates = Array.from({ length: days }, (_, i) =>
+        subDays(today, days - 1 - i)
+    );
     const weeks = [];
     for (let i = 0; i < days; i += 7) {
         weeks.push(dates.slice(i, i + 7));
@@ -91,7 +95,12 @@ export default function ContributionCalendar({ daysData = [], dates = [] }) {
     }
     // デバッグ: 右端の列（今週）の各曜日の日付を出力
     if (weeks.length > 0) {
-        console.log('今週の各曜日:', weeks[weeks.length - 1].map(date => date ? date.toLocaleDateString() : null));
+        console.log(
+            "今週の各曜日:",
+            weeks[weeks.length - 1].map((date) =>
+                date ? date.toLocaleDateString() : null
+            )
+        );
     }
     // 日付→活動量
     const dateToCount = {};
@@ -113,106 +122,197 @@ export default function ContributionCalendar({ daysData = [], dates = [] }) {
     // 月ラベル（週の中に1日があればその月をラベルに、なければ週の一番上の月）
     const monthLabels = weeks.map((week, idx) => {
         // その週の中に「1日」があるか探す
-        const firstOfMonth = week.find(date => date && date.getDate() === 1);
+        const firstOfMonth = week.find((date) => date && date.getDate() === 1);
         if (firstOfMonth) {
             // 1日があれば、その月をラベルに
-            return firstOfMonth.toLocaleString('en-US', { month: 'short' });
+            return firstOfMonth.toLocaleString("en-US", { month: "short" });
         }
         // 1日がなければ、前の週と月が異なる場合のみ表示
         const firstDate = week[0];
         if (!firstDate) return "";
         if (idx === 0) {
-            return firstDate.toLocaleString('en-US', { month: 'short' });
+            return firstDate.toLocaleString("en-US", { month: "short" });
         }
         const prevWeek = weeks[idx - 1];
         // 前の週の中に1日がある場合、その月は既にラベル表示済みなので重複させない
-        const prevHasFirst = prevWeek.find(date => date && date.getDate() === 1);
+        const prevHasFirst = prevWeek.find(
+            (date) => date && date.getDate() === 1
+        );
         if (prevHasFirst) {
             return "";
         }
         const prevDate = prevWeek[0];
         if (prevDate && prevDate.getMonth() !== firstDate.getMonth()) {
-            return firstDate.toLocaleString('en-US', { month: 'short' });
+            return firstDate.toLocaleString("en-US", { month: "short" });
         }
         return "";
     });
 
     return (
-        <div>
-            {/* 年・月ラベル＋カレンダー本体（横スクロール） */}
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                {/* 曜日ラベル（固定） */}
-                <div className="flex flex-col mr-2" style={{ minWidth: '32px' }}>
-                    {/* 1マス分の空白だけを追加 */}
-                    <div style={{ height: `${cellSize*1.4}px` }} />
-                    {WEEKDAY_LABELS.map((label, idx) => (
-                        <div
-                            key={idx}
-                            style={{
-                                height: `${cellSize}px`,
-                                lineHeight: `${cellSize}px`,
-                                fontSize: "14px",
-                                color: "#d1d5db",
-                                textAlign: "right",
-                                marginBottom: idx !== 6 ? `${cellGap}px` : 0,
-                                fontWeight: "bold",
-                                letterSpacing: "0.5px",
-                            }}
-                        >
-                            {label}
-                        </div>
-                    ))}
-                </div>
-                {/* 年・月ラベル＋カレンダー本体（横スクロール） */}
-                <div style={{ overflowX: 'auto', width: '100%', paddingBottom: '16px' }}>
-                    {/* 年ラベル */}
-                    <div style={{ display: 'flex', marginBottom: '2px', minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
-                        {yearLabels.map((label, idx) => (
-                            <div key={idx} style={{ width: `${cellSize + cellGap}px`, textAlign: 'center', fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>{label}</div>
-                        ))}
-                    </div>
-                    {/* 月ラベル */}
-                    <div style={{ display: 'flex', marginBottom: '4px', minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
-                        {monthLabels.map((label, idx) => (
-                            <div key={idx} style={{ width: `${cellSize + cellGap}px`, textAlign: 'center', fontWeight: 'bold', color: '#fff', fontSize: '14px' }}>{label}</div>
-                        ))}
-                    </div>
-                    {/* カレンダー本体（N週間分） */}
-                    <div className="flex" style={{ alignItems: "flex-start", minWidth: `${weeks.length * (cellSize + cellGap)}px` }}>
-                        {weeks.map((week, colIdx) => (
-                            <div key={colIdx} className="flex flex-col">
-                                {week.map((date, rowIdx) => {
-                                    const idx = colIdx * 7 + rowIdx;
-                                    const count = daysData[idx];
-                                    return (
-                                        <div
-                                            key={rowIdx}
-                                            className={`w-5 h-5 rounded ${date ? getColor(count || 0) : "bg-transparent"}`}
-                                            style={{
-                                                marginBottom: rowIdx !== 6 ? `${cellGap}px` : 0,
-                                                marginLeft: "2px",
-                                                marginRight: "2px",
-                                            }}
-                                        />
-                                    );
-                                })}
+        <div style={{ width: "100%" }}>
+            {/* カレンダー全体中央寄せラッパー */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                }}
+            >
+                {/* 左側余白（可変・レスポンシブ） */}
+                <div
+                    style={{ width: "clamp(8px, 6vw, 64px)", flexShrink: 1 }}
+                />
+                {/* カレンダー本体 */}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        minWidth: 0,
+                    }}
+                >
+                    {/* 曜日ラベル（固定） */}
+                    <div
+                        className="flex flex-col mr-2"
+                        style={{ minWidth: "32px" }}
+                    >
+                        {/* 1マス分の空白だけを追加 */}
+                        <div style={{ height: `${cellSize * 1.4}px` }} />
+                        {WEEKDAY_LABELS.map((label, idx) => (
+                            <div
+                                key={idx}
+                                style={{
+                                    height: `${cellSize}px`,
+                                    lineHeight: `${cellSize}px`,
+                                    fontSize: "14px",
+                                    color: "#d1d5db",
+                                    textAlign: "right",
+                                    marginBottom:
+                                        idx !== 6 ? `${cellGap}px` : 0,
+                                    fontWeight: "bold",
+                                    letterSpacing: "0.5px",
+                                }}
+                            >
+                                {label}
                             </div>
                         ))}
+                    </div>
+                    {/* 年・月ラベル＋カレンダー本体（横スクロール） */}
+                    <div
+                        style={{
+                            overflowX: "auto",
+                            maxWidth: "min(900px, 100vw - 48px)",
+                            margin: "0 auto",
+                            paddingBottom: "16px",
+                            width: "100%",
+                        }}
+                    >
+                        {/* 年ラベル */}
+                        <div
+                            style={{
+                                display: "flex",
+                                marginBottom: "2px",
+                                minWidth: `${
+                                    weeks.length * (cellSize + cellGap)
+                                }px`,
+                            }}
+                        >
+                            {yearLabels.map((label, idx) => (
+                                <div
+                                    key={idx}
+                                    style={{
+                                        width: `${cellSize + cellGap}px`,
+                                        textAlign: "center",
+                                        fontWeight: "bold",
+                                        color: "#fff",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    {label}
+                                </div>
+                            ))}
+                        </div>
+                        {/* 月ラベル */}
+                        <div
+                            style={{
+                                display: "flex",
+                                marginBottom: "4px",
+                                minWidth: `${
+                                    weeks.length * (cellSize + cellGap)
+                                }px`,
+                            }}
+                        >
+                            {monthLabels.map((label, idx) => (
+                                <div
+                                    key={idx}
+                                    style={{
+                                        width: `${cellSize + cellGap}px`,
+                                        textAlign: "center",
+                                        fontWeight: "bold",
+                                        color: "#fff",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    {label}
+                                </div>
+                            ))}
+                        </div>
+                        {/* カレンダー本体（N週間分） */}
+                        <div
+                            className="flex"
+                            style={{
+                                alignItems: "flex-start",
+                                minWidth: `${
+                                    weeks.length * (cellSize + cellGap)
+                                }px`,
+                            }}
+                        >
+                            {weeks.map((week, colIdx) => (
+                                <div key={colIdx} className="flex flex-col">
+                                    {week.map((date, rowIdx) => {
+                                        const idx = colIdx * 7 + rowIdx;
+                                        const count = daysData[idx];
+                                        return (
+                                            <div
+                                                key={rowIdx}
+                                                className={`w-5 h-5 rounded ${
+                                                    date
+                                                        ? getColor(count || 0)
+                                                        : "bg-transparent"
+                                                }`}
+                                                style={{
+                                                    marginBottom:
+                                                        rowIdx !== 6
+                                                            ? `${cellGap}px`
+                                                            : 0,
+                                                    marginLeft: "2px",
+                                                    marginRight: "2px",
+                                                }}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
             {/* 凡例（カレンダー下、中央揃え） */}
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: '16px',
-                fontSize: '14px',
-                color: '#d1d5db'
-            }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "16px",
+                    fontSize: "14px",
+                    color: "#d1d5db",
+                }}
+            >
                 <span className="mr-1">Less</span>
                 {COLORS.map((color, idx) => (
-                    <div key={idx} className={`w-4 h-3 mx-0.5 rounded ${color}`} />
+                    <div
+                        key={idx}
+                        className={`w-4 h-3 mx-0.5 rounded ${color}`}
+                    />
                 ))}
                 <span className="ml-1">More</span>
             </div>
