@@ -96,7 +96,7 @@ export function SideMenu({ sidebarWidth = 256, handleMouseDown = () => {}, threa
             <div className="p-4 flex items-center text-white flex-shrink-0">
                 <Link href={route('top')} className="flex items-center gap-2 focus:outline-none">
                     <img src="/favicon.png" alt="Logo" className="h-8 w-8 mr-3" />
-                    <span className="font-bold text-xl">MyEnglishApp</span>
+                    <span className="font-bold text-xl">Ten-EnglishApp</span>
                 </Link>
             </div>
             <div className="flex-1 min-h-0">
