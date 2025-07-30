@@ -3,8 +3,15 @@
 use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 require __DIR__ . '/auth.php';
+
+// ルートパスにアクセスした際のリダイレクト
+Route::get('/', function () {
+    // 認証状態に関係なく、確実にログインページにリダイレクト
+    return redirect()->route('login');
+});
 
 Route::middleware('auth')->group(function () {
     // トップページ表示
