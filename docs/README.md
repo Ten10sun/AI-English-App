@@ -1,53 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AI English Conversation App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 概要
+AIを活用した英会話学習アプリケーションです。ユーザーはAIと自然な英会話を楽しみながら、英語力を向上させることができます。
 
-## About Laravel
+## 主な機能
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **AIとの英会話**: OpenAIのGPTモデルを活用した自然な英会話が可能
+- **メッセージの翻訳**: 英語メッセージを日本語に翻訳して表示
+- **会話の管理**: 複数の会話スレッドを作成・管理可能
+- **レスポンシブデザイン**: スマートフォンやタブレットなど、様々なデバイスで快適に利用可能
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 技術スタック
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **バックエンド**: Laravel 10.x
+- **フロントエンド**: 
+  - JavaScript (ES6+)
+  - Tailwind CSS
+- **データベース**: SQLite
+- **その他主要パッケージ**:
+  - OpenAI PHP Client
+  - Laravel Breeze (認証機能)
 
-## Learning Laravel
+## システム要件
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.1 以上
+- Composer
+- Node.js 16.x 以上 & npm 8.x 以上
+- SQLite 3.8.8 以上
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## インストール方法
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. リポジトリをクローン
+   ```bash
+   git clone [repository-url]
+   cd ai-english-app
+   ```
 
-## Laravel Sponsors
+2. 依存パッケージのインストール
+   ```bash
+   composer install
+   npm install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. 環境設定ファイルの作成と設定
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   `.env`ファイルを編集し、必要な設定（データベース接続、OpenAI APIキーなど）を行ってください。
 
-### Premium Partners
+4. データベースのマイグレーション
+   ```bash
+   touch database/database.sqlite
+   php artisan migrate
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+5. アセットのビルド
+   ```bash
+   npm run build
+   ```
+
+6. アプリケーションの起動
+   ```bash
+   php artisan serve
+   ```
+   ブラウザで `http://localhost:8000` にアクセスしてください。
+
+## 開発者向け情報
+
+### テストの実行
+```bash
+php artisan test
+```
+
+### コードスタイルチェック
+```bash
+composer lint
+```
+
+### デバッグモードの有効化
+`.env`ファイルで`APP_DEBUG=true`に設定することで、詳細なエラーメッセージを表示できます。
+
+## ライセンス
+
+このプロジェクトは [MITライセンス](LICENSE) の下で公開されています。
+
+## 貢献方法
+
+バグの報告や機能の要望は、Issueを作成してください。プルリクエストも歓迎します。
+
+## 著者
+
+[あなたの名前]
+tenten
+---
+
+*このドキュメントはプロジェクトの進捗に伴い更新される場合があります。***
 
 ## Contributing
 
