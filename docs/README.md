@@ -91,7 +91,6 @@ composer lint
 
 ## 著者
 
-[あなたの名前]
 Ten10sun
 ---
 
